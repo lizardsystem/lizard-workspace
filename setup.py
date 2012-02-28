@@ -13,7 +13,6 @@ install_requires = [
     'Django',
     'django-extensions',
     'django-nose',
-    'lizard-ui >= 3.0',
     'pkginfo',
     ],
 
@@ -22,15 +21,15 @@ tests_require = [
 
 setup(name='lizard-workspace',
       version=version,
-      description="TODO",
+      description="Workspace api for managing workspaces and collages",
       long_description=long_description,
       # Get strings from http://www.python.org/pypi?%3Aaction=list_classifiers
       classifiers=['Programming Language :: Python',
                    'Framework :: Django',
                    ],
       keywords=[],
-      author='TODO',
-      author_email='TODO@nelen-schuurmans.nl',
+      author='Jack Ha',
+      author_email='jack.ha@nelen-schuurmans.nl',
       url='',
       license='GPL',
       packages=['lizard_workspace'],
