@@ -8,9 +8,14 @@ from lizard_ui.urls import debugmode_urlpatterns
 
 admin.autodiscover()
 
+API_URL_NAME = 'lizard_workspace_api_root'
+
+
 urlpatterns = patterns(
     '',
-    (r'^admin/', include(admin.site.urls)),
+    (r'^api/',
+     include('lizard_workspace.api.urls')),
+    # (r'^admin/', include(admin.site.urls)),
     # url(r'^something/',
     #     direct.import.views.some_method,
     #     name="name_it"),
