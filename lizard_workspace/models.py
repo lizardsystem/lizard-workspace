@@ -24,6 +24,7 @@ class Layer(models.Model):
     category = models.ForeignKey(Category, null=True, blank=True)
 
     data_set = models.ForeignKey(DataSet, null=True, blank=True)
+    # Extra params to wms?
 
     def __unicode__(self):
         return '%s' % (self.name)
