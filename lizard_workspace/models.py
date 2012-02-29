@@ -1,6 +1,7 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
 from lizard_security.manager import FilteredGeoManager
 from lizard_security.models import DataSet
@@ -53,6 +54,9 @@ class LayerWorkspace(models.Model):
 
     def __unicode__(self):
         return '%s' % (self.name)
+
+    # def get_absolute_url(self):
+    #     return reverse('lizard_workspace_api_workspace_detail', kwargs={'id': self.id})
 
 
 class LayerWorkspaceItem(models.Model):

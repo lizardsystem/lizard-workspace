@@ -19,6 +19,15 @@ class WorkspaceResource(ModelResource):
     model = LayerWorkspace
     form = WorkspaceForm
 
+    exclude = ('layers', )
+    include = ('workspace_items', 'url', )
+
+    def workspace_items(self, instance):
+        return instance.layerworkspaceitem_set.all()
+
+    # def url(self, instance):
+    #     return instance.get_absolute_url()
+
 
 class WorkspaceItemResource(ModelResource):
     """
@@ -32,5 +41,6 @@ class LayerResource(ModelResource):
     Available layers
     """
     model = Layer
-    fields = ('name', 'slug', 'wms', 'category', 'data_set', )
+    fields = ('name', 'slug', 'wms', 'category', 'data_set', 'url', )
     ordering = ('name', )
+
