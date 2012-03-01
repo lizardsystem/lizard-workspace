@@ -3,16 +3,17 @@ from django.contrib import admin
 from lizard_workspace.models import Category
 from lizard_workspace.models import Layer
 from lizard_workspace.models import LayerWorkspace
-from lizard_workspace.models import LayerWorkspaceItem
 from lizard_workspace.models import Theme
 
+from lizard_map.models import WorkspaceStorageItem
 
-class LayerWorkspaceInline(admin.TabularInline):
-    model = LayerWorkspaceItem
+
+class WorkspaceStorageItemInline(admin.TabularInline):
+    model = WorkspaceStorageItem
 
 
 class LayerWorkspaceAdmin(admin.ModelAdmin):
-    inlines = [LayerWorkspaceInline, ]
+    inlines = [WorkspaceStorageItemInline, ]
 
 
 class LayerAdmin(admin.ModelAdmin):
@@ -30,5 +31,4 @@ class CategoryAdmin(admin.ModelAdmin):
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Layer, LayerAdmin)
 admin.site.register(LayerWorkspace, LayerWorkspaceAdmin)
-admin.site.register(LayerWorkspaceItem)
 admin.site.register(Theme, ThemeAdmin)

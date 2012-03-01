@@ -14,6 +14,7 @@ install_requires = [
     'django-extensions',
     'django-nose',
     'pkginfo',
+    'lizard-map',
     ],
 
 tests_require = [
