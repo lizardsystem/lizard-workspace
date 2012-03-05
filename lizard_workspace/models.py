@@ -31,6 +31,16 @@ class ThematicMap(models.Model):
         return '%s' % (self.name)
 
 
+class Tag(models.Model):
+    """
+    Tag objects with this model using a many to many relationship.
+    """
+    slug = models.SlugField()
+
+    def __unicode__(self):
+        return '%s' % (self.slug)
+
+
 class Layer(models.Model):
     """
     Define which layers can be chosen in your Layer Workspace
@@ -85,7 +95,8 @@ class Layer(models.Model):
 
     category = models.ForeignKey(Category, null=True, blank=True)
     data_set = models.ForeignKey(DataSet, null=True, blank=True)
-    group_code = models.CharField(max_length=128, blank=True, null=True)
+    # group_code = models.CharField(max_length=128, blank=True, null=True)
+    tags = models.ManyToManyField(Tag, null=True, blank=True)
 
     objects = FilteredManager()
 

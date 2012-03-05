@@ -64,6 +64,6 @@ class LayerResource(ModelResource):
     Available layers
     """
     model = Layer
-    fields = ('name', 'slug', 'wms', 'category', 'data_set', 'url', )
+    fields = ('name', 'slug', 'url', )
     ordering = ('name', )
 
