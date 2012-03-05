@@ -10,6 +10,7 @@ from lizard_workspace.api.views import RootView
 from lizard_workspace.api.resources import LayerResource
 from lizard_workspace.api.resources import WorkspaceResource
 from lizard_workspace.api.resources import WorkspaceItemResource
+from lizard_workspace.api.views import LayerWorkspaceView
 
 admin.autodiscover()
 
@@ -39,4 +40,8 @@ urlpatterns = patterns(
     url(r'^layer/(?P<id>\d+)/$',
         InstanceModelView.as_view(resource=LayerResource),
         name=NAME_PREFIX + 'layer_detail'),
+    url(r'^workspace_view/$',
+        LayerWorkspaceView.as_view(),
+        name=NAME_PREFIX + 'workspace_view'),
+
     )
