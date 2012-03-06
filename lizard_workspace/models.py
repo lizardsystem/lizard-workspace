@@ -3,13 +3,14 @@ import json
 
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+#from django.core.urlresolvers import reverse
 
 from lizard_security.manager import FilteredManager
 from lizard_security.models import DataSet
 
 from lizard_map.models import WorkspaceStorage
 from lizard_map.models import ADAPTER_CLASS_WMS
+from treebeard.al_tree import AL_Node
 
 
 class Category(models.Model):
@@ -17,7 +18,7 @@ class Category(models.Model):
     slug = models.SlugField()
 
     def __unicode__(self):
-        return '%s' % (self.name)
+        return '%s' % self.name
 
 
 class ThematicMap(models.Model):
@@ -28,7 +29,7 @@ class ThematicMap(models.Model):
     models.ForeignKey('LayerWorkspace', null=True, blank=True)
 
     def __unicode__(self):
-        return '%s' % (self.name)
+        return '%s' % self.name
 
 
 class Tag(models.Model):
@@ -38,7 +39,38 @@ class Tag(models.Model):
     slug = models.SlugField()
 
     def __unicode__(self):
-        return '%s' % (self.slug)
+        return '%s' % self.slug
+
+
+class WmsServer(models.Model):
+    """
+        location of WMS server
+    """
+    name = models.CharField(max_length=128)
+    slug = models.SlugField()
+    url = models.CharField(max_length=512, blank=True, null=True,
+                                help_text='Url of wms or tile request format for OSM')
+    title = models.CharField(max_length=256, blank=True, default='',
+                             help_text='title provided by WMS server self (part of sync script)')
+    abstract = models.TextField(blank=True, default='')
+
+    def __unicode__(self):
+        return self.name
+
+
+class SyncTask(models.Model):
+    """
+        task settings for sync with capabilities of WMS server
+    """
+    name = models.CharField(max_length=128)
+    slug = models.SlugField()
+    server = models.ForeignKey(WmsServer)
+    data_set = models.ForeignKey(DataSet, null=True, blank=True)
+
+    last_sync = models.DateTimeField(blank=True, null=True)
+    last_result = models.TextField(blank=True, default='')
+
+    objects = FilteredManager()
 
 
 class Layer(models.Model):
@@ -55,9 +87,22 @@ class Layer(models.Model):
         (OLLAYER_TYPE_OSM, ("Openstreetmap")),
     )
 
+    OWNER_TYPE_USER = 0
+    OWNER_TYPE_DATASET = 1
+    OWNER_TYPE_PUBLIC = 2
+
+
+    OWNER_TYPE_CHOICES = (
+        (OWNER_TYPE_USER, ("User")),
+        (OWNER_TYPE_DATASET, ("Dataset")),
+        (OWNER_TYPE_PUBLIC, ("Public")),
+    )
+
     #popup
     #has_legend
     #default opacity
+
+    valid = models.BooleanField(default=True)
 
     name = models.CharField(max_length=80)
     slug = models.SlugField()
@@ -71,8 +116,7 @@ class Layer(models.Model):
     ollayer_class = models.CharField(max_length=80, choices=OLLAYER_TYPE_CHOICES, default=OLLAYER_TYPE_WMS)
 
     #request_params for wms
-    url = models.CharField(max_length=256, blank=True, null=True,
-                                help_text='Url of wms of tile request format for OSM')
+    server = models.ForeignKey(WmsServer, blank=True, null=True)
     layers = models.CharField(max_length=512, blank=True, null=True,
                                 help_text='Layers for WMS')
     filter = models.CharField(max_length=512, blank=True, null=True)
@@ -95,21 +139,23 @@ class Layer(models.Model):
 
     category = models.ForeignKey(Category, null=True, blank=True)
     data_set = models.ForeignKey(DataSet, null=True, blank=True)
+    user = models.ForeignKey(User, null=True, blank=True)
+    owner_type = models.IntegerField(choices=OWNER_TYPE_CHOICES, default=OWNER_TYPE_USER)
     # group_code = models.CharField(max_length=128, blank=True, null=True)
     tags = models.ManyToManyField(Tag, null=True, blank=True)
 
     objects = FilteredManager()
 
     def __unicode__(self):
-        return '%s' % (self.name)
+        return '%s' % self.name
 
     def adapter_layer_json(self):
         """Call this function to add an item to your workspace
         """
         return json.dumps({
                 'name': self.name,
-                'url': self.wms,
-                'params': self.params,
+                'url': self.url,
+                'params': self.request_params,
                 'options': self.options})
 
     def adapter_class(self):
@@ -175,7 +221,7 @@ class LayerWorkspace(WorkspaceStorage):
                 'order': layer.index,
 
                 'ollayer_class': layer.layer.ollayer_class,
-                'url': layer.layer.url,
+                'url': None,
                 'layers': layer.layer.layers,
                 'filter': layer.layer.filter,
                 'request_params': layer.layer.request_params,
@@ -189,6 +235,9 @@ class LayerWorkspace(WorkspaceStorage):
                 'clickable': layer.clickable,
                 'filter_string': layer.filter_string,
             }
+            if layer.layer.server:
+                item.url = layer.layer.server.url
+
             output.append(item)
         return output
 
@@ -204,7 +253,7 @@ class LayerWorkspace(WorkspaceStorage):
             layer_item.index = layer['order']
             layer.save()
 
-        return true
+        return True
 
 class LayerWorkspaceItem(models.Model):
     """
@@ -238,3 +287,110 @@ class LayerWorkspaceItem(models.Model):
 
 #     def __unicode__(self):
 #         return '%s' % self.name
+
+class LayerFolder(AL_Node):
+    """
+        maps with layers
+    """
+    name = models.CharField(max_length=128)
+    layers = models.ManyToManyField(Layer, blank=True, null=True)
+    layer_tab = models.ManyToManyField(Tag, blank=True, null=True)
+    parent = models.ForeignKey('self',
+                           related_name='children_set',
+                           null=True,
+                           db_index=True)
+    node_order_by = ['name']
+
+    def __unicode__(self):
+        return self.name
+
+
+
+class AppScreen(models.Model):
+    """
+
+    """
+    name = models.CharField(max_length=128)
+    slug = models.SlugField()
+    apps = models.ManyToManyField('App', through='AppScreenAppItems', related_name='screen')
+
+    def __unicode__(self):
+        return self.name
+
+
+class AppScreenAppItems(models.Model):
+    """
+    """
+    appscreen = models.ForeignKey('AppScreen')
+    app = models.ForeignKey('App')
+    index = models.IntegerField(default=100)
+
+    def __unicode__(self):
+        return "%s %s %s"%(self.appscreen.name, self.app.name, self.index)
+
+class AppIcons(models.Model):
+    """
+
+    """
+    name = models.CharField(max_length=128)
+    url = models.CharField(max_length=256)
+
+    def __unicode__(self):
+        return self.name
+
+
+class App(models.Model):
+    """
+
+
+    """
+
+    ACTION_TYPE_NOACTION = 0
+    ACTION_TYPE_URLLINK = 1
+    ACTION_TYPE_PORTLET_LINK = 2
+    ACTION_TYPE_APPSCREEN = 10
+    ACTION_TYPE_LAYER_NAVIGATION = 20
+    ACTION_TYPE_OTHER_NAVIGATION = 50
+
+
+    ACTION_TYPE_CHOICES = (
+        (ACTION_TYPE_NOACTION, 'no action'),
+        (ACTION_TYPE_URLLINK, 'url link'),
+        (ACTION_TYPE_PORTLET_LINK, 'portlet link'),
+        (ACTION_TYPE_APPSCREEN, 'other appscreen'),
+        (ACTION_TYPE_LAYER_NAVIGATION, 'layer navigation app'),
+        (ACTION_TYPE_OTHER_NAVIGATION, 'other app'),
+    )
+
+
+
+    name = models.CharField(max_length=128)
+    slug = models.SlugField()
+    description = models.TextField(blank=True,
+                               default='')
+    mouse_over = models.CharField(max_length=256,
+                                  blank=True,
+                                  default='')
+
+
+    icon = models.ForeignKey(AppIcons)
+    action_type = models.IntegerField(
+        default=ACTION_TYPE_NOACTION,
+        choices=ACTION_TYPE_CHOICES
+    )
+
+    root_map = models.ForeignKey(LayerFolder, blank=True, null=True) #in case of layers
+    appscreen = models.ForeignKey(AppScreen,
+                                  blank=True,
+                                  null=True,
+                                  related_name='+') #in case of an appscreen link
+
+    action_params = models.TextField(
+        blank=True,
+        default='{}',
+        help_text='dictionary with settings for action'
+    )
+
+    def __unicode__(self):
+        return self.name
+

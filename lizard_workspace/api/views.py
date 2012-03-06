@@ -1,4 +1,5 @@
 import json
+from django.shortcuts import get_object_or_404
 
 from djangorestframework.views import View
 from django.core.urlresolvers import reverse
@@ -6,7 +7,7 @@ from django.core.urlresolvers import reverse
 from djangorestframework.views import ListOrCreateModelView
 from lizard_api.base import BaseApiView
 
-from lizard_workspace.models import LayerWorkspace
+from lizard_workspace.models import LayerWorkspace, AppScreen
 from lizard_workspace.models import Layer
 
 
@@ -168,7 +169,7 @@ class ExtendedListOrCreateModelView(ListOrCreateModelView):
 #                 print request
 #         else:
 #             return super(ExtendedListOrCreateModelView, self).post(*args, **kwargs)
->>>>>>> d7ff9bb2d71c773231a67d79133de18e7fae78ac
+
 
 
 class RootView(View):
@@ -319,28 +320,20 @@ class LayerWorkspaceView(BaseApiView):
             )
 
 
-<<<<<<< HEAD
-class LayerView(BaseApiView):
-    """
-        Show organisations for selection and edit
-    """
-    model_class = Layer
-    name_field = 'name'
 
-=======
 class AvailableLayersView(BaseApiView):
     """
     Show available layers
     """
     model_class = Layer
     name_field = 'name'
->>>>>>> d7ff9bb2d71c773231a67d79133de18e7fae78ac
+
     valid_field = None
 
     field_mapping = {
+        'slug': 'slug',
         'id': 'id',
         'name': 'name',
-<<<<<<< HEAD
         'use_location_filter': 'use_location_filter',
         'location_filter': 'location_filtere',
         'ollayer_class': 'ollayer_class',
@@ -357,46 +350,99 @@ class AvailableLayersView(BaseApiView):
 
     ]
 
-    def get_object_for_api(self,
-                           layer,
-                           flat=True,
-                           size=BaseApiView.COMPLETE,
-                           include_geom=False):
-        """
-        create object of measure
-        """
-        if size == self.ID_NAME:
-            output = {
-                'id': worksp.id,
-                'name': worksp.name,
-            }
-        else:
-            output = {
-                'id': layer.id,
-                'name': layer.name,
-                'use_location_filter': layer.use_location_filter,
-                'location_filter': layer.location_filter,
+#    def get_object_for_api(self,
+#                           layer,
+#                           flat=True,
+#                           size=BaseApiView.COMPLETE,
+#                           include_geom=False):
+#        """
+#        create object of measure
+#        """
+#        if size == self.ID_NAME:
+#            output = {
+#                'id': worksp.id,
+#                'name': worksp.name,
+#            }
+#        else:
+#            output = {
+#                'id': layer.id,
+#                'name': layer.name,
+#                'use_location_filter': layer.use_location_filter,
+#                'location_filter': layer.location_filter,
+#
+#                'ollayer_class': layer.ollayer_class,
+#                'url': layer.url,
+#                'layers': layer.layers,
+#                'filter': layer.filter,
+#                'request_params': layer.request_params,
+#
+#                'is_base_layer': layer.is_base_layer,
+#                'single_tile': layer.single_tile,
+#                'options': layer.options,
+#            }
+#
+#        return output
 
-                'ollayer_class': layer.ollayer_class,
-                'url': layer.url,
-                'layers': layer.layers,
-                'filter': layer.filter,
-                'request_params': layer.request_params,
 
-                'is_base_layer': layer.is_base_layer,
-                'single_tile': layer.single_tile,
-                'options': layer.options,
-            }
-
-        return output
-=======
-        'slug': 'slug'
-        }
 
     def get_object_for_api(
         self, obj, flat=True, size=BaseApiView.COMPLETE, include_geom=False):
         return {'id': obj.id, 'text': obj.name, 'slug': obj.slug,
                 'children': [], 'leaf': True, 'checked': False}
 
->>>>>>> d7ff9bb2d71c773231a67d79133de18e7fae78ac
 
+class AppLayerTreeView(View):
+
+
+    def get(self, request):
+
+
+
+
+        return  [
+            {'plid':1, 'text': 'map1', 'children': [
+                {'plid':3, 'text': 'leaf 3', 'checked': False, 'leaf': True},
+                {'plid':4, 'text': 'leaf 4', 'checked': True, 'leaf': True},
+            ]},
+            {'plid':2, 'text': 'map2', 'children': []}
+        ]
+
+
+class AppScreenView(View):
+
+    def get(self, request):
+
+        object_id = request.GET.get('object_id', None)
+
+        appscreen = get_object_or_404(AppScreen, slug=object_id)
+
+        output = []
+
+        for app in appscreen.appscreenappitems_set.all().select_related('app', 'app__icon').order_by('index'):
+
+            try:
+                action_params = json.loads(app.app.action_params)
+            except:
+                print 'error in action_params'
+                action_params = {}
+            if app.app.root_map:
+                action_params['root_map'] = app.app.root_map.id
+            #if app.app.appscreen:
+            #    action_params['appscreen'] = app.app.appscreen.slug
+
+
+            output.append({
+                'id': app.app.id,
+                'name': app.app.name,
+                'mouse_over': app.app.mouse_over,
+                'slug': app.app.slug,
+                'action_type': app.app.action_type,
+                'action_params': action_params,
+                'icon': app.app.icon.url,
+            })
+
+
+
+        return {
+            'data': output
+        }
