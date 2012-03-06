@@ -5,6 +5,8 @@ Changelog of lizard-workspace
 0.1 (unreleased)
 ----------------
 
+- See readme.
+
 - Initial migrations.
 
 - Initial models and api.

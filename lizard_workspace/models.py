@@ -379,7 +379,7 @@ class AppScreenAppItems(models.Model):
 
 class AppIcons(models.Model):
     """
-
+    Point to an icon file.
     """
     name = models.CharField(max_length=128)
     url = models.CharField(max_length=256)
@@ -390,8 +390,7 @@ class AppIcons(models.Model):
 
 class App(models.Model):
     """
-
-
+    App.
     """
 
     ACTION_TYPE_NOACTION = 0
