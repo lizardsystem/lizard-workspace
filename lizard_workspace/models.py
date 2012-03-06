@@ -255,6 +255,7 @@ class LayerWorkspace(WorkspaceStorage):
 
         return True
 
+
 class LayerWorkspaceItem(models.Model):
     """
     Define an item in a workspace
@@ -275,19 +276,6 @@ class LayerWorkspaceItem(models.Model):
         return '%s %s' % (self.layer_workspace, self.layer)
 
 
-# class UserLayerWorkspaceItem(models.Model):
-#     """
-#     User defined workspace item: essentially a wms.
-#     """
-#     layer_workspace = models.ForeignKey(LayerWorkspace)
-
-#     name = models.CharField(max_length=80)
-#     wms = models.URLField()
-#     index = models.IntegerField(default=100)
-
-#     def __unicode__(self):
-#         return '%s' % self.name
-
 class LayerFolder(AL_Node):
     """
         maps with layers
@@ -303,7 +291,6 @@ class LayerFolder(AL_Node):
 
     def __unicode__(self):
         return self.name
-
 
 
 class AppScreen(models.Model):
