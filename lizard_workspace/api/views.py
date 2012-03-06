@@ -233,16 +233,23 @@ class AvailableLayersView(BaseApiView):
 
 
 class AppLayerTreeView(View):
-
-
+    """
+    Return tree of LayerFolder
+    """
     def get(self, request):
         """
-        object_id: id of rootmap LayerFolder
+        object_id: id of rootmap LayerFolder.
+
+        -provide 'object_id=' to get the root
+        -if you don't provide object_id, you'll get nothing
         """
-        parent_id = request.GET.get('object_id', None)
-        if not parent_id:
-            parent_id = None
-        result = LayerFolder.tree_dict(parent_id)
+        try:
+            parent_id = request.GET['object_id']
+            if not parent_id:
+                parent_id = None
+            result = LayerFolder.tree_dict(parent_id)
+        except:
+            result = []
 
         return result
 
