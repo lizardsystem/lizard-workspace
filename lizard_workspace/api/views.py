@@ -257,27 +257,30 @@ class AppScreenView(View):
 
         output = []
 
-        for app in appscreen.appscreenappitems_set.all().select_related('app', 'app__icon').order_by('index'):
+        for app_item in appscreen.appscreenappitems_set.all().select_related(
+            'app', 'app__icon').order_by('index'):
 
             try:
-                action_params = json.loads(app.app.action_params)
+                action_params = json.loads(app_item.app.action_params)
             except:
                 print 'error in action_params'
                 action_params = {}
-            if app.app.root_map:
-                action_params['root_map'] = app.app.root_map.id
+            if app_item.app.root_map:
+                action_params['root_map'] = app_item.app.root_map.id
             #if app.app.appscreen:
             #    action_params['appscreen'] = app.app.appscreen.slug
 
 
             output.append({
-                'id': app.app.id,
-                'name': app.app.name,
-                'mouse_over': app.app.mouse_over,
-                'slug': app.app.slug,
-                'action_type': app.app.action_type,
+                'id': app_item.app.id,
+                'name': app_item.app.name,
+                'mouse_over': app_item.app.mouse_over,
+                'slug': app_item.app.slug,
+                'action_type': app_item.app.action_type,
                 'action_params': action_params,
-                'icon': app.app.icon.url,
+                'icon': app_item.app.icon.url,
+                'target_app_slug': (app_item.app.appscreen.slug
+                                    if app_item.app.appscreen else None)
             })
 
 
