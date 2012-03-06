@@ -422,18 +422,19 @@ class App(models.Model):
     )
 
     # in case of layers
-    root_map = models.ForeignKey(LayerFolder, blank=True, null=True)
+    root_map = models.ForeignKey(
+        LayerFolder, blank=True, null=True,
+        help_text='Link to layer, layer navigation app. Will be added to action_params.')
 
     # Link to another app screen, in case of an appscreen link
-    appscreen = models.ForeignKey(AppScreen,
-                                  blank=True,
-                                  null=True,
-                                  related_name='+')
+    appscreen = models.ForeignKey(
+        AppScreen, blank=True, null=True, related_name='+',
+        help_text='Link to another app screen, other appscreen')
 
     action_params = models.TextField(
         blank=True,
         default='{}',
-        help_text='dictionary with settings for action'
+        help_text='dictionary with (extra) settings for action'
     )
 
     def __unicode__(self):
