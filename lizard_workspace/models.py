@@ -278,19 +278,65 @@ class LayerWorkspaceItem(models.Model):
 
 class LayerFolder(AL_Node):
     """
-        maps with layers
+    maps with layers
+
+    Contains layers directly and layers referenced by tags
     """
     name = models.CharField(max_length=128)
     layers = models.ManyToManyField(Layer, blank=True, null=True)
-    layer_tab = models.ManyToManyField(Tag, blank=True, null=True)
+    layer_tag = models.ManyToManyField(Tag, blank=True, null=True)
     parent = models.ForeignKey('self',
                            related_name='children_set',
-                           null=True,
+                           null=True, blank=True,
                            db_index=True)
     node_order_by = ['name']
 
     def __unicode__(self):
         return self.name
+
+    def layers_dict(self):
+        """
+        Return layers and layers referenced by tags in a dict form.
+
+        TODO: add 'checked' to the layers that are in the current workspace.
+        """
+        layers = (self.layers.all() |
+                  Layer.objects.filter(tags__in=self.layer_tag.all())).distinct()
+        return [{'plid': layer.id, 'text': layer.name, 'leaf': True, 'checked': False}
+                for layer in layers]
+
+    @classmethod
+    def tree_dict(cls, parent_id=None):
+        """
+        Output folder hierarchy with layers in dict form.
+
+            {'plid':1, 'text': 'map1', 'children': [
+                {'plid':3, 'text': 'leaf 3', 'leaf': True},
+                {'plid':4, 'text': 'leaf 4', 'leaf': True},
+            ]},
+            {'plid':2, 'text': 'map2', 'children': []}
+        """
+        result = []
+        if parent_id is not None:
+            parent_folder = cls.objects.get(id=parent_id)
+            layer_folders = cls.objects.filter(parent=parent_folder)
+
+            # Add layers and layers filtered by tags
+            layer_folder_dict = parent_folder.layers_dict()
+            result.extend(layer_folder_dict)
+        else:
+            layer_folders = cls.objects.filter(parent=None)
+        layer_folders = list(layer_folders)  # Fetch from db.
+
+        # Add children
+        for layer_folder in layer_folders:
+            children_layer_tree = cls.tree_dict(parent_id=layer_folder.id)
+            if children_layer_tree:
+                result.append(
+                    {'text': layer_folder.name, 'children': children_layer_tree})
+
+        return result
+
 
 
 class AppScreen(models.Model):
@@ -314,6 +360,7 @@ class AppScreenAppItems(models.Model):
 
     def __unicode__(self):
         return "%s %s %s"%(self.appscreen.name, self.app.name, self.index)
+
 
 class AppIcons(models.Model):
     """
@@ -339,7 +386,6 @@ class App(models.Model):
     ACTION_TYPE_LAYER_NAVIGATION = 20
     ACTION_TYPE_OTHER_NAVIGATION = 50
 
-
     ACTION_TYPE_CHOICES = (
         (ACTION_TYPE_NOACTION, 'no action'),
         (ACTION_TYPE_URLLINK, 'url link'),
@@ -348,8 +394,6 @@ class App(models.Model):
         (ACTION_TYPE_LAYER_NAVIGATION, 'layer navigation app'),
         (ACTION_TYPE_OTHER_NAVIGATION, 'other app'),
     )
-
-
 
     name = models.CharField(max_length=128)
     slug = models.SlugField()
@@ -366,11 +410,14 @@ class App(models.Model):
         choices=ACTION_TYPE_CHOICES
     )
 
-    root_map = models.ForeignKey(LayerFolder, blank=True, null=True) #in case of layers
+    # in case of layers
+    root_map = models.ForeignKey(LayerFolder, blank=True, null=True)
+
+    # Link to another app screen, in case of an appscreen link
     appscreen = models.ForeignKey(AppScreen,
                                   blank=True,
                                   null=True,
-                                  related_name='+') #in case of an appscreen link
+                                  related_name='+')
 
     action_params = models.TextField(
         blank=True,

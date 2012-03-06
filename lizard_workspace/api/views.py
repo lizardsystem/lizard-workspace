@@ -7,8 +7,10 @@ from django.core.urlresolvers import reverse
 from djangorestframework.views import ListOrCreateModelView
 from lizard_api.base import BaseApiView
 
-from lizard_workspace.models import LayerWorkspace, AppScreen
+from lizard_workspace.models import AppScreen
 from lizard_workspace.models import Layer
+from lizard_workspace.models import LayerFolder
+from lizard_workspace.models import LayerWorkspace
 
 
 class RootView(View):
@@ -234,17 +236,15 @@ class AppLayerTreeView(View):
 
 
     def get(self, request):
+        """
+        object_id: id of rootmap LayerFolder
+        """
+        parent_id = request.GET.get('object_id', None)
+        if not parent_id:
+            parent_id = None
+        result = LayerFolder.tree_dict(parent_id)
 
-
-
-
-        return  [
-            {'plid':1, 'text': 'map1', 'children': [
-                {'plid':3, 'text': 'leaf 3', 'checked': False, 'leaf': True},
-                {'plid':4, 'text': 'leaf 4', 'checked': True, 'leaf': True},
-            ]},
-            {'plid':2, 'text': 'map2', 'children': []}
-        ]
+        return result
 
 
 class AppScreenView(View):
