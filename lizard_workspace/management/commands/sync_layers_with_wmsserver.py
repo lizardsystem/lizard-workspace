@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright 2011 Nelen & Schuurmans
 import logging
+import datetime
 from django.conf import settings
 
 from owslib.wms import WebMapService
@@ -8,7 +9,11 @@ from owslib.wms import WebMapService
 from django.core.management.base import BaseCommand
 from django.template.defaultfilters import slugify
 
-from lizard_workspace.models import Tag, Layer
+from lizard_workspace.models import Tag
+from lizard_workspace.models import Layer
+from lizard_workspace.models import SyncTask
+
+from optparse import make_option
 
 
 logger = logging.getLogger(__name__)
@@ -25,7 +30,6 @@ class Command(BaseCommand):
                     default=None),
         make_option('--all',
                     help='sync all tasks',
-                    type='bool',
                     default=False))
 
 
@@ -38,7 +42,7 @@ class Command(BaseCommand):
                              "Use -help for example.")
             return
 
-        if options[all]:
+        if options['all']:
             tasks = SyncTask.objects.all()
         else:
             task = SyncTask.objects.get(slug=options['sync_task'])
@@ -47,14 +51,14 @@ class Command(BaseCommand):
 
         for task in tasks:
 
-            log.logger('start with sync of server %s'%task.server.name)
+            logger.info('start with sync of server %s' % task.server.name)
 
             data_set = task.data_set
             service_url = task.server.url
 
             wms = WebMapService(service_url, version='1.1.1')
 
-            tag, new = Tag.objects.get_or_create(slug='server_'%task.server.name)
+            tag, new = Tag.objects.get_or_create(slug='server_%s'%task.server.name)
 
             layers = Layer.objects.filter(server=task.server)
 

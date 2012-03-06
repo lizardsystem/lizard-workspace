@@ -8,7 +8,8 @@ from lizard_workspace.models import AppScreenAppItems
 from lizard_workspace.models import App
 from lizard_workspace.models import AppScreen
 from lizard_workspace.models import AppIcons
-#from lizard_workspace.models import Theme
+from lizard_workspace.models import SyncTask
+from lizard_workspace.models import WmsServer
 
 from lizard_map.models import WorkspaceStorageItem
 
@@ -58,3 +59,5 @@ admin.site.register(AppIcons)
 
 admin.site.register(LayerFolder)
 admin.site.register(Tag)
+admin.site.register(SyncTask)
+admin.site.register(WmsServer)

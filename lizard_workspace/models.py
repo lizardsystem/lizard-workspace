@@ -74,6 +74,9 @@ class SyncTask(models.Model):
 
     objects = FilteredManager()
 
+    def __unicode__(self):
+        return '%s %s' % (self.name, self.server)
+
 
 class Layer(models.Model):
     """
