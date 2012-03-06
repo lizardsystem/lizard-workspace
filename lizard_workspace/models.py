@@ -48,10 +48,12 @@ class WmsServer(models.Model):
     """
     name = models.CharField(max_length=128)
     slug = models.SlugField()
-    url = models.CharField(max_length=512, blank=True, null=True,
-                                help_text='Url of wms or tile request format for OSM')
-    title = models.CharField(max_length=256, blank=True, default='',
-                             help_text='title provided by WMS server self (part of sync script)')
+    url = models.CharField(
+        max_length=512, blank=True, null=True,
+        help_text='Url of wms or tile request format for OSM')
+    title = models.CharField(
+        max_length=256, blank=True, default='',
+        help_text='title provided by WMS server self (part of sync script)')
     abstract = models.TextField(blank=True, default='')
 
     def __unicode__(self):
@@ -91,7 +93,6 @@ class Layer(models.Model):
     OWNER_TYPE_DATASET = 1
     OWNER_TYPE_PUBLIC = 2
 
-
     OWNER_TYPE_CHOICES = (
         (OWNER_TYPE_USER, ("User")),
         (OWNER_TYPE_DATASET, ("Dataset")),
@@ -107,13 +108,17 @@ class Layer(models.Model):
     name = models.CharField(max_length=80)
     slug = models.SlugField()
 
-    use_location_filter = models.BooleanField(default=False,
-                            help_text="Must a workspace add a filter based on the current selected location context")
-    location_filter = models.CharField(max_length=128, blank=True, null=True,
-                            help_text="Parameter filter string with '{object_id}' on the location of the id.")
+    use_location_filter = models.BooleanField(
+        default=False,
+        help_text=("Must a workspace add a filter based on the "
+                   "current selected location context"))
+    location_filter = models.CharField(
+        max_length=128, blank=True, null=True,
+        help_text=("Parameter filter string with '{object_id}' "
+                   "on the location of the id."))
 
-
-    ollayer_class = models.CharField(max_length=80, choices=OLLAYER_TYPE_CHOICES, default=OLLAYER_TYPE_WMS)
+    ollayer_class = models.CharField(
+        max_length=80, choices=OLLAYER_TYPE_CHOICES, default=OLLAYER_TYPE_WMS)
 
     #request_params for wms
     server = models.ForeignKey(WmsServer, blank=True, null=True)
@@ -140,7 +145,8 @@ class Layer(models.Model):
     category = models.ForeignKey(Category, null=True, blank=True)
     data_set = models.ForeignKey(DataSet, null=True, blank=True)
     user = models.ForeignKey(User, null=True, blank=True)
-    owner_type = models.IntegerField(choices=OWNER_TYPE_CHOICES, default=OWNER_TYPE_USER)
+    owner_type = models.IntegerField(
+        choices=OWNER_TYPE_CHOICES, default=OWNER_TYPE_USER)
     # group_code = models.CharField(max_length=128, blank=True, null=True)
     tags = models.ManyToManyField(Tag, null=True, blank=True)
 
@@ -174,7 +180,6 @@ class LayerWorkspace(WorkspaceStorage):
     OWNER_TYPE_DATASET = 1
     OWNER_TYPE_PUBLIC = 2
 
-
     OWNER_TYPE_CHOICES = (
         (OWNER_TYPE_USER, ("User")),
         (OWNER_TYPE_DATASET, ("Dataset")),
@@ -184,7 +189,8 @@ class LayerWorkspace(WorkspaceStorage):
     personal_category = models.CharField(max_length=80, null=True, blank=True)
     category = models.ForeignKey(Category, null=True, blank=True)
     data_set = models.ForeignKey(DataSet, null=True, blank=True)
-    owner_type = models.IntegerField(choices=OWNER_TYPE_CHOICES, default=OWNER_TYPE_USER)
+    owner_type = models.IntegerField(
+        choices=OWNER_TYPE_CHOICES, default=OWNER_TYPE_USER)
 
     objects = FilteredManager()
 
@@ -205,12 +211,14 @@ class LayerWorkspace(WorkspaceStorage):
     #     return '%s' % (self.name)
 
     # def get_absolute_url(self):
-    #     return reverse('lizard_workspace_api_workspace_detail', kwargs={'id': self.id})
+    #     return reverse('lizard_workspace_api_workspace_detail',
+    #                    kwargs={'id': self.id})
 
     def get_workspace_layers(self):
-        layers = LayerWorkspaceItem.objects.filter(layer_workspace=self).order_by('index').select_related('layer')
+        layers = LayerWorkspaceItem.objects.filter(
+            layer_workspace=self).order_by('index').select_related('layer')
 
-        output=[]
+        output = []
 
         for layer in layers:
             item = {
@@ -247,7 +255,8 @@ class LayerWorkspace(WorkspaceStorage):
         """
         #todo remove removed layers
         for layer in layers:
-            layer_item, new = self.layerworkspaceitem_set.get_or_create(layer=Layer.objects.get(pk=layer['id']))
+            layer_item, new = self.layerworkspaceitem_set.get_or_create(
+                layer=Layer.objects.get(pk=layer['id']))
             layer_item.visible = layer['visibility']
             layer_item.clickable = layer['clickable']
             layer_item.index = layer['order']
@@ -300,9 +309,11 @@ class LayerFolder(AL_Node):
 
         TODO: add 'checked' to the layers that are in the current workspace.
         """
-        layers = (self.layers.all() |
-                  Layer.objects.filter(tags__in=self.layer_tag.all())).distinct()
-        return [{'plid': layer.id, 'text': layer.name, 'leaf': True, 'checked': False}
+        layers = (
+            self.layers.all() |
+            Layer.objects.filter(tags__in=self.layer_tag.all())).distinct()
+        return [{'plid': layer.id, 'text': layer.name,
+                 'leaf': True, 'checked': False}
                 for layer in layers]
 
     @classmethod
@@ -333,19 +344,20 @@ class LayerFolder(AL_Node):
             children_layer_tree = cls.tree_dict(parent_id=layer_folder.id)
             if children_layer_tree:
                 result.append(
-                    {'text': layer_folder.name, 'children': children_layer_tree})
+                    {'text': layer_folder.name,
+                     'children': children_layer_tree})
 
         return result
 
 
-
 class AppScreen(models.Model):
     """
-
+    Define a screen full of apps.
     """
     name = models.CharField(max_length=128)
     slug = models.SlugField()
-    apps = models.ManyToManyField('App', through='AppScreenAppItems', related_name='screen')
+    apps = models.ManyToManyField(
+        'App', through='AppScreenAppItems', related_name='screen')
 
     def __unicode__(self):
         return self.name
@@ -359,7 +371,7 @@ class AppScreenAppItems(models.Model):
     index = models.IntegerField(default=100)
 
     def __unicode__(self):
-        return "%s %s %s"%(self.appscreen.name, self.app.name, self.index)
+        return "%s %s %s" % (self.appscreen.name, self.app.name, self.index)
 
 
 class AppIcons(models.Model):
@@ -403,7 +415,6 @@ class App(models.Model):
                                   blank=True,
                                   default='')
 
-
     icon = models.ForeignKey(AppIcons)
     action_type = models.IntegerField(
         default=ACTION_TYPE_NOACTION,
@@ -427,4 +438,3 @@ class App(models.Model):
 
     def __unicode__(self):
         return self.name
-
