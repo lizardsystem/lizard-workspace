@@ -20,8 +20,15 @@ logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    help = ("Example: bin/django sync_layers_with_wmsserver --sync_task=<slug of SyncTask> "\
-                "--all=True")
+    help = ("""
+Make Layers for all layers found in wmsservers, configured in
+SyncTask. Properties can be set in single SyncTasks.
+
+Tags of existing elements will not be deleted. If necessary they will
+be extended.
+
+Example: bin/django sync_layers_with_wmsserver --sync_task=<slug of SyncTask> --all=True
+""")
 
     option_list = BaseCommand.option_list + (
         make_option('--sync_task',

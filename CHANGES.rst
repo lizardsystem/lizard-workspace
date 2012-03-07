@@ -5,7 +5,9 @@ Changelog of lizard-workspace
 0.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Implemented sync_layers_fewsnorm: it populates the Layer model with
+  Layers associated with fewsnorm parameter / moduleinstance /
+  qualifierset / timestep combinations.
 
 
 0.1 (2012-03-06)

@@ -1,3 +1,4 @@
+import json
 import logging
 
 from django.core.management.base import BaseCommand
@@ -16,7 +17,7 @@ logger = logging.getLogger(__name__)
 class Command(BaseCommand):
     help = ("""
 Use a Layer template and fewsnorm to create new Layers for fewsnorm
-(params, qualifiersets).
+(params, qualifiersets). All the properties and tags will be reset.
 
 Prerequisities:
 - a Layer as a template
@@ -76,6 +77,7 @@ Example: bin/django sync_layers_fewsnorm --slug=<slug of existing Layer>
                 # removed already.
                 new_layer = existing_layers[instance_slug]
                 logger.debug('Update: %s' % instance_slug)
+                new_layer.data_set = layer.data_set
                 count_update += 1
             else:
                 # New
@@ -85,6 +87,8 @@ Example: bin/django sync_layers_fewsnorm --slug=<slug of existing Layer>
                 new_layer.id = None
                 count_new += 1
 
+            new_layer.filter = json.dumps({
+                    'par_ident': par, 'mod_ident': mod, 'qua_ident': qua, 'stp_ident': stp})
             if qua is None:
                 new_layer.name = '%s (%s)' % (par, stp)
             else:
@@ -94,6 +98,8 @@ Example: bin/django sync_layers_fewsnorm --slug=<slug of existing Layer>
             new_layer.save()
 
             new_layer.tags.add(tag)
+            for original_tag in layer.tags.all():
+                new_layer.tags.add(original_tag)
             if mod is not None:
                 # add tag
                 mod_tag, _ = Tag.objects.get_or_create(slug='%s_%s' % (tag, mod))
