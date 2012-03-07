@@ -42,7 +42,9 @@ Example: bin/django sync_layers_fewsnorm --slug=<slug of existing Layer>
         logger.info('start sync')
         slug = options['slug']
         source_ident = 'fewsnorm::%s' % slug
+
         layer = Layer.objects.get(slug=slug)
+        original_tags = layer.tags.all()
         logger.info('template: %s' % layer)
 
         tag, _ = Tag.objects.get_or_create(slug='fewsnorm_%s' % slug)
@@ -101,7 +103,7 @@ Example: bin/django sync_layers_fewsnorm --slug=<slug of existing Layer>
             new_layer.save()
 
             new_layer.tags.add(tag)
-            for original_tag in layer.tags.all():
+            for original_tag in original_tags:
                 new_layer.tags.add(original_tag)
             if mod is not None:
                 # add tag
