@@ -15,6 +15,7 @@ install_requires = [
     'django-nose',
     'pkginfo',
     'lizard-map',
+    'lizard-fewsnorm',
     'OWSLib'
     ],
 

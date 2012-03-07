@@ -104,7 +104,7 @@ class Command(BaseCommand):
                 else:
                     layer.owner_type = Layer.OWNER_TYPE_PUBLIC
 
-                layer.sync_task = task
+                layer.source_ident = 'sync_task::%s' % task.slug
                 layer.save()
 
                 #nog iets met styles?

@@ -41,6 +41,12 @@ class Tag(models.Model):
     def __unicode__(self):
         return '%s' % self.slug
 
+    def layer_count(self):
+        """
+        Return number of layers associated with this tag.
+        """
+        return self.layer_set.all().count()
+
 
 class WmsServer(models.Model):
     """
@@ -114,7 +120,7 @@ class Layer(models.Model):
     valid = models.BooleanField(default=True)
 
     name = models.CharField(max_length=80)
-    slug = models.SlugField()
+    slug = models.SlugField(max_length=200)
 
     use_location_filter = models.BooleanField(
         default=False,
@@ -158,9 +164,12 @@ class Layer(models.Model):
     # group_code = models.CharField(max_length=128, blank=True, null=True)
     tags = models.ManyToManyField(Tag, null=True, blank=True)
 
-    sync_task = models.ForeignKey(
-        SyncTask, null=True, blank=True,
-        help_text='From what sync task did I come from?')
+    # sync_task = models.ForeignKey(
+    #     SyncTask, null=True, blank=True,
+    #     help_text='From what sync task did I come from?')
+    source_ident = models.CharField(
+        max_length=80, null=True, blank=True,
+        help_text='Where do I come from?')
 
     objects = FilteredManager()
 
