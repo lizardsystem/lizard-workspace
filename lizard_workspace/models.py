@@ -67,7 +67,12 @@ class SyncTask(models.Model):
     name = models.CharField(max_length=128)
     slug = models.SlugField()
     server = models.ForeignKey(WmsServer)
-    data_set = models.ForeignKey(DataSet, null=True, blank=True)
+    data_set = models.ForeignKey(
+        DataSet, null=True, blank=True,
+        help_text='The data set to be associated with the Layers.')
+    tag = models.ForeignKey(
+        Tag, null=True, blank=True,
+        help_text='The tag to be associated with the Layers. Defaults to auto generated tag.')
 
     last_sync = models.DateTimeField(blank=True, null=True)
     last_result = models.TextField(blank=True, default='')
@@ -75,7 +80,7 @@ class SyncTask(models.Model):
     objects = FilteredManager()
 
     def __unicode__(self):
-        return '%s %s' % (self.name, self.server)
+        return '%s' % (self.name)
 
 
 class Layer(models.Model):
@@ -175,6 +180,13 @@ class Layer(models.Model):
         """Call this function to add an item to your workspace
         """
         return ADAPTER_CLASS_WMS
+
+    def tags_str(self):
+        tag_names = [str(tag) for tag in self.tags.all()]
+        if tag_names:
+            return ', '.join(tag_names)
+        else:
+            return 'no tags'
 
 
 class LayerWorkspace(WorkspaceStorage):

@@ -29,8 +29,9 @@ class LayerWorkspaceAdmin(admin.ModelAdmin):
 
 
 class LayerAdmin(admin.ModelAdmin):
+    list_filter = ['data_set', 'sync_task', ]
+    list_display = ['__unicode__', 'data_set', 'sync_task', 'tags_str']
     prepopulated_fields = {"slug": ("name", )}
-
 
 
 class AppScreenAdmin(admin.ModelAdmin):

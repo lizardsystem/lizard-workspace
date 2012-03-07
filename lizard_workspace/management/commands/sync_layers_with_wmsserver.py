@@ -58,7 +58,10 @@ class Command(BaseCommand):
 
             wms = WebMapService(service_url, version='1.1.1')
 
-            tag, new = Tag.objects.get_or_create(slug='server_%s'%task.server.name)
+            if task.tag:
+                tag, new = task.tag, False
+            else:
+                tag, new = Tag.objects.get_or_create(slug='server_%s'%task.server.name)
 
             layers = Layer.objects.filter(server=task.server)
 
@@ -101,6 +104,7 @@ class Command(BaseCommand):
                 else:
                     layer.owner_type = Layer.OWNER_TYPE_PUBLIC
 
+                layer.sync_task = task
                 layer.save()
 
                 #nog iets met styles?
