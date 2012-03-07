@@ -344,8 +344,9 @@ class LayerFolder(AL_Node):
         TODO: add 'checked' to the layers that are in the current workspace.
         """
         layers = (
-            self.layers.all() |
-            Layer.objects.filter(tags__in=self.layer_tag.all())).distinct()
+            self.layers.filter(valid=True) |
+            Layer.objects.filter(
+                tags__in=self.layer_tag.all(), valid=True)).distinct().order_by('name')
         return [{'plid': layer.id, 'text': layer.name,
                  'leaf': True, 'checked': False}
                 for layer in layers]
@@ -382,6 +383,12 @@ class LayerFolder(AL_Node):
                      'children': children_layer_tree})
 
         return result
+
+
+# class LayerFolderItem(models.Models):
+#     layer = model.ForeignKey(Layer)
+#     layer_folder = model.ForeignKey(LayerFolder)
+#     index = model.IntegerField(default=100)
 
 
 class AppScreen(models.Model):
