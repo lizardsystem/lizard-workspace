@@ -153,6 +153,10 @@ class Layer(models.Model):
     # group_code = models.CharField(max_length=128, blank=True, null=True)
     tags = models.ManyToManyField(Tag, null=True, blank=True)
 
+    sync_task = models.ForeignKey(
+        SyncTask, null=True, blank=True,
+        help_text='From what sync task did I come from?')
+
     objects = FilteredManager()
 
     def __unicode__(self):
