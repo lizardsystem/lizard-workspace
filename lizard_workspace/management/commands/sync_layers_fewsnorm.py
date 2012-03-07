@@ -1,6 +1,7 @@
 import json
 import logging
 
+from django.db import transaction
 from django.core.management.base import BaseCommand
 from optparse import make_option
 
@@ -36,9 +37,11 @@ Example: bin/django sync_layers_fewsnorm --slug=<slug of existing Layer>
                     type='str',
                     default='fews_locations'),)
 
+    @transaction.commit_on_success
     def handle(self, *args, **options):
         logger.info('start sync')
         slug = options['slug']
+        source_ident = 'fewsnorm::%s' % slug
         layer = Layer.objects.get(slug=slug)
         logger.info('template: %s' % layer)
 
@@ -48,7 +51,7 @@ Example: bin/django sync_layers_fewsnorm --slug=<slug of existing Layer>
         logger.debug('Invalidating existing layers...')
         existing_layers = dict(
             (l.slug, l) for l in
-            Layer.objects.filter(slug__startswith=slug))
+            Layer.objects.filter(source_ident=source_ident))
         for existing_layer in existing_layers.values():
             # Invalidate first.
             existing_layer.valid = False
@@ -93,7 +96,7 @@ Example: bin/django sync_layers_fewsnorm --slug=<slug of existing Layer>
                 new_layer.name = '%s (%s)' % (par, stp)
             else:
                 new_layer.name = '%s %s (%s)' % (par, qua, stp)
-            new_layer.source_ident = 'fewsnorm::%s' % slug
+            new_layer.source_ident = source_ident
             new_layer.valid = True
             new_layer.save()
 

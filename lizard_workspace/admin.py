@@ -29,8 +29,8 @@ class LayerWorkspaceAdmin(admin.ModelAdmin):
 
 
 class LayerAdmin(admin.ModelAdmin):
-    list_filter = ('data_set', 'source_ident', )
-    list_display = ('__unicode__', 'data_set', 'source_ident', 'tags_str')
+    list_filter = ('valid', 'data_set', 'source_ident', )
+    list_display = ('__unicode__', 'valid', 'data_set', 'source_ident', 'tags_str')
     prepopulated_fields = {"slug": ("name", )}
 
 

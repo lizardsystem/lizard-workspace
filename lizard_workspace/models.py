@@ -88,6 +88,12 @@ class SyncTask(models.Model):
     def __unicode__(self):
         return '%s' % (self.name)
 
+    @property
+    def source_ident(self):
+        """ Used to fill in in Layer model.
+        """
+        return 'sync_task::%s' % self.slug
+
 
 class Layer(models.Model):
     """

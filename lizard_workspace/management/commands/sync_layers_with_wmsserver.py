@@ -70,7 +70,8 @@ Example: bin/django sync_layers_with_wmsserver --sync_task=<slug of SyncTask> --
             else:
                 tag, new = Tag.objects.get_or_create(slug='server_%s'%task.server.name)
 
-            layers = Layer.objects.filter(server=task.server)
+            # layers = Layer.objects.filter(server=task.server)
+            layers = Layer.objects.filter(source_ident=task.source_ident)
 
             layer_dict = dict(layers.values_list('layers', 'id'))
 
@@ -111,7 +112,7 @@ Example: bin/django sync_layers_with_wmsserver --sync_task=<slug of SyncTask> --
                 else:
                     layer.owner_type = Layer.OWNER_TYPE_PUBLIC
 
-                layer.source_ident = 'sync_task::%s' % task.slug
+                layer.source_ident = task.source_ident
                 layer.save()
 
                 #nog iets met styles?
