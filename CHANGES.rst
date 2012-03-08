@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.2 (unreleased)
+0.2 (2012-03-08)
 ----------------
 
 - Added fields to API calls.
