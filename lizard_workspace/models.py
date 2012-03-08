@@ -391,6 +391,14 @@ class LayerFolder(AL_Node):
         return output
 #        return [layer.get_object_dict()
 #        for layer in layers]
+#=======
+#            self.layers.filter(valid=True) |
+#            Layer.objects.filter(
+#                tags__in=self.layer_tag.all(), valid=True)).distinct().order_by('name')
+#        return [{'plid': layer.id, 'text': layer.name,
+#                 'leaf': True, 'checked': False}
+#                for layer in layers]
+#>>>>>>> 39d63d892bf00d0cb8c100aeaa9b11bfc0a7d1ec
 
     @classmethod
     def tree_dict(cls, parent_id=None):
@@ -424,6 +432,12 @@ class LayerFolder(AL_Node):
                      'children': children_layer_tree})
 
         return result
+
+
+# class LayerFolderItem(models.Models):
+#     layer = model.ForeignKey(Layer)
+#     layer_folder = model.ForeignKey(LayerFolder)
+#     index = model.IntegerField(default=100)
 
 
 class AppScreen(models.Model):

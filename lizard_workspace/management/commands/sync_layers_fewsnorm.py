@@ -74,9 +74,7 @@ Example: bin/django sync_layers_fewsnorm --slug=<slug of existing Layer>
             qua = par_mod_qua_stp['qualifiersetcache__ident']
             stp = par_mod_qua_stp['timestepcache__ident']
 
-            instance_slug = '%s_%s_%s_%s' % (slug, par, qua, stp)
-            # Layers can be processed multiple times when multiple
-            # modules exist. It doesn't harm.
+            instance_slug = '%s_%s_%s_%s_%s' % (slug, par, mod, qua, stp)
             if instance_slug in existing_layers:
                 # Update existing, the old existing tags have been
                 # removed already.
@@ -94,10 +92,14 @@ Example: bin/django sync_layers_fewsnorm --slug=<slug of existing Layer>
 
             new_layer.filter = json.dumps({
                     'par_ident': par, 'mod_ident': mod, 'qua_ident': qua, 'stp_ident': stp})
+
+            # Note that the same name can occur multiple times, but
+            # with different mod, qua and/or stp.
             if qua is None:
-                new_layer.name = '%s (%s)' % (par, stp)
+                new_layer.name = '%s (%s)' % (par_name, stp)
             else:
-                new_layer.name = '%s %s (%s)' % (par, qua, stp)
+                new_layer.name = '%s %s (%s)' % (par_name, qua, stp)
+            new_layer.name = new_layer.name[:80]
             new_layer.source_ident = source_ident
             new_layer.valid = True
             new_layer.save()

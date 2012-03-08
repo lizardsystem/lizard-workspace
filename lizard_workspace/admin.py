@@ -30,7 +30,7 @@ class LayerWorkspaceAdmin(admin.ModelAdmin):
 
 class LayerAdmin(admin.ModelAdmin):
     list_filter = ('valid', 'data_set', 'source_ident', )
-    list_display = ('__unicode__', 'valid', 'data_set', 'source_ident', 'tags_str')
+    list_display = ('name', 'valid', 'data_set', 'source_ident', 'filter', 'tags_str')
     prepopulated_fields = {"slug": ("name", )}
 
 
@@ -53,6 +53,10 @@ class TagAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'layer_count')
 
 
+class LayerFolderAdmin(admin.ModelAdmin):
+    pass
+
+
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Layer, LayerAdmin)
 admin.site.register(LayerWorkspace, LayerWorkspaceAdmin)
@@ -62,7 +66,7 @@ admin.site.register(App, AppAdmin)
 admin.site.register(AppScreen, AppScreenAdmin)
 admin.site.register(AppIcons)
 
-admin.site.register(LayerFolder)
+admin.site.register(LayerFolder, LayerFolderAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(SyncTask)
 admin.site.register(WmsServer)
