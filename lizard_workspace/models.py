@@ -144,7 +144,9 @@ class Layer(models.Model):
     server = models.ForeignKey(WmsServer, blank=True, null=True)
     layers = models.CharField(max_length=512, blank=True, null=True,
                                 help_text='Layers for WMS')
-    filter = models.CharField(max_length=512, blank=True, null=True)
+    filter = models.CharField(
+        max_length=512, blank=True, null=True,
+        help_text='a cql_filter parameter that will be added to the OpenLayers layer params')
 
     #request_params additional to parameters above.
     #defaults for WMS request params are:
@@ -374,7 +376,8 @@ class LayerFolder(AL_Node):
         """
         layers = (
             self.layers.all() |
-            Layer.objects.filter(tags__in=self.layer_tag.all())).distinct()
+            Layer.objects.filter(
+                tags__in=self.layer_tag.all())).distinct().order_by('name')
 
         output = []
 

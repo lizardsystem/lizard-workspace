@@ -90,8 +90,16 @@ Example: bin/django sync_layers_fewsnorm --slug=<slug of existing Layer>
                 new_layer.id = None
                 count_new += 1
 
-            new_layer.filter = json.dumps({
-                    'par_ident': par, 'mod_ident': mod, 'qua_ident': qua, 'stp_ident': stp})
+            layer_params = []
+            if par:
+                layer_params.append("par_ident='%s'" % par)
+            # if mod:
+            #     layer_params.append("mod_ident='%s'" % mod)
+            if qua:
+                layer_params.append("qua_ident='%s'" % qua)
+            if stp:
+                layer_params.append("stp_ident='%s'" % stp)
+            new_layer.filter = ' and '.join(layer_params)
 
             # Note that the same name can occur multiple times, but
             # with different mod, qua and/or stp.
