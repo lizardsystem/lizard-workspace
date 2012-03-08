@@ -192,7 +192,12 @@ class Layer(models.Model):
                 'options': self.options})
 
     def adapter_class(self):
-        """Call this function to add an item to your workspace
+        """Call this fun
+            'id': self.id,
+            'name': self.name,
+            'use_location_filter': self.use_location_filter,
+            'location_filter': self.location_filter,
+ction to add an item to your workspace
         """
         return ADAPTER_CLASS_WMS
 
@@ -202,6 +207,26 @@ class Layer(models.Model):
             return ', '.join(tag_names)
         else:
             return 'no tags'
+
+    def get_object_dict(self):
+
+
+        output = {
+            'ollayer_class': self.ollayer_class,
+
+            'layers': self.layers,
+            'filter': self.filter,
+            'request_params': self.request_params,
+
+            'is_base_layer': self.is_base_layer,
+            'single_tile': self.single_tile,
+            'options': self.options,
+        }
+
+        if self.server:
+            output['url'] = self.server.url
+
+        return output
 
 
 class LayerWorkspace(WorkspaceStorage):
@@ -257,7 +282,8 @@ class LayerWorkspace(WorkspaceStorage):
         for layer in layers:
             item = {
                 'id': layer.layer.id,
-                'name': layer.layer.name,
+                'title': layer.layer.name,
+                'text': layer.layer.name,
                 'use_location_filter': layer.layer.use_location_filter,
                 'location_filter': layer.layer.location_filter,
                 'order': layer.index,
@@ -278,7 +304,7 @@ class LayerWorkspace(WorkspaceStorage):
                 'filter_string': layer.filter_string,
             }
             if layer.layer.server:
-                item.url = layer.layer.server.url
+                item['url'] = layer.layer.server.url
 
             output.append(item)
         return output
@@ -289,12 +315,15 @@ class LayerWorkspace(WorkspaceStorage):
         """
         #todo remove removed layers
         for layer in layers:
-            layer_item, new = self.layerworkspaceitem_set.get_or_create(
-                layer=Layer.objects.get(pk=layer['id']))
-            layer_item.visible = layer['visibility']
-            layer_item.clickable = layer['clickable']
-            layer_item.index = layer['order']
-            layer.save()
+            try:
+                layer_item, new = self.layerworkspaceitem_set.get_or_create(
+                    layer=Layer.objects.get(pk=layer['id']))
+                layer_item.visible = layer['visibility']
+                layer_item.clickable = layer['clickable']
+                layer_item.index = layer['order']
+                layer_item.save()
+            except Layer.DoesNotExist:
+                print "layer %s bestaat niet. Achtergrond kaart?"%layer['title']
 
         return True
 
@@ -346,9 +375,22 @@ class LayerFolder(AL_Node):
         layers = (
             self.layers.all() |
             Layer.objects.filter(tags__in=self.layer_tag.all())).distinct()
-        return [{'plid': layer.id, 'text': layer.name,
-                 'leaf': True, 'checked': False}
-                for layer in layers]
+
+        output = []
+
+        for layer in layers:
+            item = layer.get_object_dict()
+            item['plid'] = layer.id
+            item['text'] = layer.name
+            item['leaf'] = True
+            item['checked'] = False
+            #del item['id']
+
+            output.append(item)
+
+        return output
+#        return [layer.get_object_dict()
+#        for layer in layers]
 
     @classmethod
     def tree_dict(cls, parent_id=None):

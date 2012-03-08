@@ -191,45 +191,24 @@ class AvailableLayersView(BaseApiView):
 
     ]
 
-#    def get_object_for_api(self,
-#                           layer,
-#                           flat=True,
-#                           size=BaseApiView.COMPLETE,
-#                           include_geom=False):
-#        """
-#        create object of measure
-#        """
-#        if size == self.ID_NAME:
-#            output = {
-#                'id': worksp.id,
-#                'name': worksp.name,
-#            }
-#        else:
-#            output = {
-#                'id': layer.id,
-#                'name': layer.name,
-#                'use_location_filter': layer.use_location_filter,
-#                'location_filter': layer.location_filter,
-#
-#                'ollayer_class': layer.ollayer_class,
-#                'url': layer.url,
-#                'layers': layer.layers,
-#                'filter': layer.filter,
-#                'request_params': layer.request_params,
-#
-#                'is_base_layer': layer.is_base_layer,
-#                'single_tile': layer.single_tile,
-#                'options': layer.options,
-#            }
-#
-#        return output
+    def get_object_for_api(self,
+                           layer,
+                           flat=True,
+                           size=BaseApiView.COMPLETE,
+                           include_geom=False):
+        """
+        create object of measure
+        """
+        if size == self.ID_NAME:
+            output = {
+                'id': worksp.id,
+                'name': worksp.name,
+            }
+        else:
+            output = layer.get_object_dict()
 
+        return output
 
-
-    def get_object_for_api(
-        self, obj, flat=True, size=BaseApiView.COMPLETE, include_geom=False):
-        return {'id': obj.id, 'text': obj.name, 'slug': obj.slug,
-                'children': [], 'leaf': True, 'checked': False}
 
 
 class AppLayerTreeView(View):
