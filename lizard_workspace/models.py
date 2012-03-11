@@ -134,8 +134,9 @@ class Layer(models.Model):
                    "current selected location context"))
     location_filter = models.CharField(
         max_length=128, blank=True, null=True,
-        help_text=("Parameter filter string with '{object_id}' "
-                   "on the location of the id."))
+        help_text=("Key - value json string. key= parameter, value = template for value. input is an object object (id,name,type) "
+                   "if empty the id is used. example: {\"key\":\"cql_filter\", \"tpl\":\"gafident like \'{id}\'\"}Parameter filter string with \'{object_id}\' "
+                   ))
 
     ollayer_class = models.CharField(
         max_length=80, choices=OLLAYER_TYPE_CHOICES, default=OLLAYER_TYPE_WMS)
@@ -214,7 +215,13 @@ ction to add an item to your workspace
 
 
         output = {
+            'plid': self.id,
+
+            'use_location_filter': self.use_location_filter,
+            'location_filter': self.location_filter,
+
             'ollayer_class': self.ollayer_class,
+            'title': self.name,
 
             'layers': self.layers,
             'filter': self.filter,
@@ -254,6 +261,9 @@ class LayerWorkspace(WorkspaceStorage):
         choices=OWNER_TYPE_CHOICES, default=OWNER_TYPE_USER)
 
     objects = FilteredManager()
+
+    class Meta:
+        ordering = ['name']
 
     def __unicode__(self):
         return '%s %s %s' % (

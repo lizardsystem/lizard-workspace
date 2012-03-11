@@ -48,7 +48,8 @@ class LayerWorkspaceView(BaseApiView):
         'owner_type': 'owner_type',
         'data_set': 'data_set',
         'owner': 'owner_id',
-        'layers': 'layers__name'
+        'layers': 'layers__name',
+        'read_only': 'owner_type',
     }
 
     read_only_fields = [
@@ -89,10 +90,10 @@ class LayerWorkspaceView(BaseApiView):
                     flat
                 ),
                 'owner_type': self._get_choice(
-
                     worksp.owner_type,
                     flat
                 ),
+                'read_only': not(worksp.owner_type == LayerWorkspace.OWNER_TYPE_USER)
             }
 
         elif size == self.COMPLETE:
@@ -117,6 +118,7 @@ class LayerWorkspaceView(BaseApiView):
                     worksp.owner_type,
                     flat
                 ),
+                'read_only': not(worksp.owner_type == LayerWorkspace.OWNER_TYPE_USER),
                 'layers': worksp.get_workspace_layers()
                 #'status_planned': measure.status_moment_string(is_planning=True),
             }
@@ -201,8 +203,8 @@ class AvailableLayersView(BaseApiView):
         """
         if size == self.ID_NAME:
             output = {
-                'id': worksp.id,
-                'name': worksp.name,
+                'id': layer.id,
+                'name': layer.name,
             }
         else:
             output = layer.get_object_dict()
