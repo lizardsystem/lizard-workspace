@@ -143,6 +143,7 @@ class Layer(models.Model):
 
     #request_params for wms
     server = models.ForeignKey(WmsServer, blank=True, null=True)
+    is_local_server = models.BooleanField(default=False)
     layers = models.CharField(max_length=512, blank=True, null=True,
                                 help_text='Layers for WMS')
     filter = models.CharField(
@@ -158,6 +159,8 @@ class Layer(models.Model):
 
     #layer settings in openlayers (options)
     is_base_layer = models.BooleanField(default=False)
+    is_clickable = models.BooleanField(
+        default=True, help_text='Is the layer clickable at all?')
     single_tile = models.BooleanField(default=False)
 
     #default settings for a layer in openlayers:
@@ -350,7 +353,8 @@ class LayerWorkspaceItem(models.Model):
     filter_string = models.CharField(max_length=124, null=True, blank=True)
 
     visible = models.BooleanField(default=True)
-    clickable = models.BooleanField(default=True)
+    clickable = models.BooleanField(
+        default=True, help_text='Only possible is Layer.is_clickable')
 
     index = models.IntegerField(default=100)
     opacity = models.IntegerField(default=0)

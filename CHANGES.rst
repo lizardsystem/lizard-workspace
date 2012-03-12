@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.3 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Added Layer.is_local_layer, Layer.is_clickable.
 
 
 0.2 (2012-03-08)
