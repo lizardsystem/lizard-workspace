@@ -93,8 +93,8 @@ Example: bin/django sync_layers_fewsnorm --slug=<slug of existing Layer>
             layer_params = []
             if par:
                 layer_params.append("par_ident='%s'" % par)
-            # if mod:
-            #     layer_params.append("mod_ident='%s'" % mod)
+            if mod:
+                layer_params.append("mod_ident='%s'" % mod)
             if qua:
                 layer_params.append("qua_ident='%s'" % qua)
             if stp:
