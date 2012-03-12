@@ -272,7 +272,8 @@ ction to add an item to your workspace
             'single_tile': self.single_tile,
             'options': self.options,
             'is_local_server': self.is_local_server,
-            'is_clickable': self.is_clickable
+            'is_clickable': self.is_clickable,
+            'js_popup_class': self.js_popup_class
         }
 
         if self.server:
