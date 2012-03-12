@@ -57,6 +57,12 @@ class WmsServer(models.Model):
     url = models.CharField(
         max_length=512, blank=True, null=True,
         help_text='Url of wms or tile request format for OSM')
+    is_local_server = models.BooleanField(
+        default=False,
+        help_text='If true, calls from the client will not be wrapped in a proxy call.')
+    is_clickable = models.BooleanField(
+        default=True,
+        help_text='Are the layers clickable by default?')
     title = models.CharField(
         max_length=256, blank=True, default='',
         help_text='title provided by WMS server self (part of sync script)')
@@ -143,7 +149,9 @@ class Layer(models.Model):
 
     #request_params for wms
     server = models.ForeignKey(WmsServer, blank=True, null=True)
-    is_local_server = models.BooleanField(default=False)
+    is_local_server = models.BooleanField(
+        default=False,
+        help_text='If true, calls from the client will not be wrapped in a proxy call.')
     is_clickable = models.BooleanField(
         default=True, help_text='Is the layer clickable at all?')
     layers = models.CharField(max_length=512, blank=True, null=True,
@@ -233,6 +241,8 @@ ction to add an item to your workspace
             'is_base_layer': self.is_base_layer,
             'single_tile': self.single_tile,
             'options': self.options,
+            'is_local_server': self.is_local_server,
+            'is_clickable': self.is_clickable
         }
 
         if self.server:
@@ -289,37 +299,42 @@ class LayerWorkspace(WorkspaceStorage):
     #                    kwargs={'id': self.id})
 
     def get_workspace_layers(self):
-        layers = LayerWorkspaceItem.objects.filter(
+        layer_workspace_items = LayerWorkspaceItem.objects.filter(
             layer_workspace=self).order_by('index').select_related('layer')
 
         output = []
 
-        for layer in layers:
+        for layer_workspace_item in layer_workspace_items:
             item = {
-                'id': layer.layer.id,
-                'title': layer.layer.name,
-                'text': layer.layer.name,
-                'use_location_filter': layer.layer.use_location_filter,
-                'location_filter': layer.layer.location_filter,
-                'order': layer.index,
+                'order': layer_workspace_item.index,
+                'visibility': layer_workspace_item.visible,
+                'opacity': layer_workspace_item.opacity,
+                'clickable': layer_workspace_item.clickable,
+                'filter_string': layer_workspace_item.filter_string,
 
-                'ollayer_class': layer.layer.ollayer_class,
-                'url': None,
-                'layers': layer.layer.layers,
-                'filter': layer.layer.filter,
-                'request_params': layer.layer.request_params,
+                # 'id': layer_workspace_item.layer.id,
+                # 'title': layer_workspace_item.layer.name,
+                # 'text': layer_workspace_item.layer.name,
+                # 'use_location_filter': layer_workspace_item.layer.use_location_filter,
+                # 'location_filter': layer_workspace_item.layer.location_filter,
 
-                'is_base_layer': layer.layer.is_base_layer,
-                'single_tile': layer.layer.single_tile,
-                'options': layer.layer.options,
+                # 'ollayer_class': layer_workspace_item.layer.ollayer_class,
+                # 'url': None,
+                # 'layers': layer_workspace_item.layer.layers,
+                # 'filter': layer_workspace_item.layer.filter,
+                # 'request_params': layer_workspace_item.layer.request_params,
 
-                'visibility': layer.visible,
-                'opacity': layer.opacity,
-                'clickable': layer.clickable,
-                'filter_string': layer.filter_string,
+                # 'is_base_layer': layer_workspace_item.layer.is_base_layer,
+                # 'single_tile': layer_workspace_item.layer.single_tile,
+                # 'options': layer_workspace_item.layer.options,
+
             }
-            if layer.layer.server:
-                item['url'] = layer.layer.server.url
+            # Note: is_clickable is whether the layer is clickable at
+            # all, clickable is the user-selected option if the layer
+            # is clickable.
+            item.update(layer_workspace_item.layer.get_object_dict())
+            # if layer_workspace_item.layer.server:
+            #     item['url'] = layer_workspace_item.layer.server.url
 
             output.append(item)
         return output

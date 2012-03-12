@@ -110,6 +110,8 @@ Example: bin/django sync_layers_fewsnorm --slug=<slug of existing Layer>
             new_layer.name = new_layer.name[:80]
             new_layer.source_ident = source_ident
             new_layer.valid = True
+            new_layer.is_local_server = layer.is_local_server
+            new_layer.is_clickable = layer.is_local_server
             new_layer.save()
 
             new_layer.tags.add(tag)

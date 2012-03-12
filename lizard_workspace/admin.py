@@ -29,8 +29,9 @@ class LayerWorkspaceAdmin(admin.ModelAdmin):
 
 
 class LayerAdmin(admin.ModelAdmin):
-    list_filter = ('valid', 'data_set', 'source_ident', )
-    list_display = ('name', 'valid', 'data_set', 'source_ident', 'filter', 'tags_str')
+    list_filter = ('valid', 'data_set', 'source_ident', 'is_local_server', )
+    list_display = ('name', 'valid', 'data_set', 'source_ident',
+                    'filter', 'is_local_server', 'tags_str')
     prepopulated_fields = {"slug": ("name", )}
 
 
