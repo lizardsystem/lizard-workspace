@@ -190,6 +190,9 @@ class AvailableLayersView(BaseApiView):
         'is_base_layer': 'is_base_layer',
         'single_tile': 'single_tile',
         'options': 'options',
+        'is_local_server': 'is_local_server',
+        'is_clickable': 'is_clickable',
+        'js_popup_class': 'js_popup_class'
     }
 
     read_only_fields = [
