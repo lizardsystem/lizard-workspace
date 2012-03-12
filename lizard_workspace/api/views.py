@@ -31,12 +31,15 @@ class RootView(View):
             }
 
 
+
+
 class LayerWorkspaceView(BaseApiView):
     """
         Show organisations for selection and edit
     """
     model_class = LayerWorkspace
     name_field = 'name'
+    slug_field = 'slug'
 
     valid_field = None
 

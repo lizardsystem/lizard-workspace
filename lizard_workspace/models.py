@@ -258,6 +258,7 @@ class LayerWorkspace(WorkspaceStorage):
     )
 
     personal_category = models.CharField(max_length=80, null=True, blank=True)
+    slug = models.SlugField(null=True, blank=True)
     category = models.ForeignKey(Category, null=True, blank=True)
     data_set = models.ForeignKey(DataSet, null=True, blank=True)
     owner_type = models.IntegerField(
