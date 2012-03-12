@@ -5,6 +5,8 @@ Changelog of lizard-workspace
 0.3 (unreleased)
 ----------------
 
+- Added Layer.js_popup_class.
+
 - Added Layer.is_local_layer, Layer.is_clickable,
   WmsServer.is_local_layer, WmsServer.is_clickable.
 

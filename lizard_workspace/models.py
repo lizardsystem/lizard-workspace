@@ -50,22 +50,28 @@ class Tag(models.Model):
 
 class WmsServer(models.Model):
     """
-        location of WMS server
+    WMS server
+
+    Also defines which properties to use with new Layer objects:
+    is_local_server, is_clickable, js_popup_class.
     """
     name = models.CharField(max_length=128)
     slug = models.SlugField()
     url = models.CharField(
         max_length=512, blank=True, null=True,
         help_text='Url of wms or tile request format for OSM')
+    title = models.CharField(
+        max_length=256, blank=True, default='',
+        help_text='title provided by WMS server self (part of sync script)')
     is_local_server = models.BooleanField(
         default=False,
         help_text='If true, calls from the client will not be wrapped in a proxy call.')
     is_clickable = models.BooleanField(
         default=True,
         help_text='Are the layers clickable by default?')
-    title = models.CharField(
-        max_length=256, blank=True, default='',
-        help_text='title provided by WMS server self (part of sync script)')
+    js_popup_class = models.CharField(
+        max_length=80, blank=True, null=True,
+        help_text="Lizard.popup.&lt;js_popup_class>")
     abstract = models.TextField(blank=True, default='')
 
     def __unicode__(self):
@@ -105,7 +111,28 @@ class Layer(models.Model):
     """
     Define which layers can be chosen in your Layer Workspace
 
-    Inspired by lizard-wms
+    A layer defines:
+
+    - how to show a wms map layer in OpenLayers
+
+    - if it is clickable. in that case the client should fire a
+      request to the server when something is clicked.
+
+    - js_popup_class: which ExtJS popup class should be used to
+      display click results.
+
+    - owner type. User is for private layers, DataSet is for a DataSet
+      and Public is for everybody
+
+    - which tags apply to a layer. layers can be filtered using tags.
+
+    - source_ident: a signature of "where do I come from". The creator
+      will replace objects based on source_ident (and other
+      properties)
+
+    A layer can be created from a sync script, like
+    sync_layers_with_wmsserver or sync_layers_fewsnorm.
+
     """
     OLLAYER_TYPE_WMS = 'OpenLayers.Layer.WMS'
     OLLAYER_TYPE_OSM = 'OpenLayers.Layer.OSM'
@@ -154,6 +181,9 @@ class Layer(models.Model):
         help_text='If true, calls from the client will not be wrapped in a proxy call.')
     is_clickable = models.BooleanField(
         default=True, help_text='Is the layer clickable at all?')
+    js_popup_class = models.CharField(
+        max_length=80, blank=True, null=True,
+        help_text="Lizard.popup.&lt;js_popup_class>")
     layers = models.CharField(max_length=512, blank=True, null=True,
                                 help_text='Layers for WMS')
     filter = models.CharField(

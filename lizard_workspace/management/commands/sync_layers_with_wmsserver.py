@@ -108,6 +108,7 @@ Example: bin/django sync_layers_with_wmsserver --sync_task=<slug of SyncTask> --
                 layer.data_set = data_set
                 layer.is_local_server = task.server.is_local_server
                 layer.is_clickable = task.server.is_clickable
+                layer.js_popup_class = task.server.js_popup_class
                 layer.valid = True
                 if data_set:
                     layer.owner_type = Layer.OWNER_TYPE_DATASET
