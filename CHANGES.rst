@@ -5,7 +5,11 @@ Changelog of lizard-workspace
 0.3 (unreleased)
 ----------------
 
-- Added Layer.is_local_layer, Layer.is_clickable.
+- Added Layer.is_local_layer, Layer.is_clickable,
+  WmsServer.is_local_layer, WmsServer.is_clickable.
+
+- Updated sync functions to take over the is_local_layer and
+  is_clickable options.
 
 
 0.2 (2012-03-08)
