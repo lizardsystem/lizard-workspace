@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.3 (unreleased)
+0.3 (2012-03-12)
 ----------------
 
 - Added Layer.js_popup_class.
