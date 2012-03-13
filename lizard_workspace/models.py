@@ -282,11 +282,10 @@ ction to add an item to your workspace
         return output
 
 
-class LayerWorkspace(WorkspaceStorage):
-    """
-    Define a workspace: lizard-map workspace with extensions.
+class LayerContainerMixin(models.Model):
+    """Necessary fields for a layer container
 
-    TODO: some ExtJS call return function?
+    For use in LayerWorkspaces and LayerCollages
     """
     OWNER_TYPE_USER = 0
     OWNER_TYPE_DATASET = 1
@@ -297,16 +296,26 @@ class LayerWorkspace(WorkspaceStorage):
         (OWNER_TYPE_DATASET, ("Dataset")),
         (OWNER_TYPE_PUBLIC, ("Public")),
     )
-
-    personal_category = models.CharField(max_length=80, null=True, blank=True)
-    slug = models.SlugField(null=True, blank=True)
-    category = models.ForeignKey(Category, null=True, blank=True)
     data_set = models.ForeignKey(DataSet, null=True, blank=True)
     owner_type = models.IntegerField(
         choices=OWNER_TYPE_CHOICES, default=OWNER_TYPE_USER)
 
+    personal_category = models.CharField(max_length=80, null=True, blank=True)
+    slug = models.SlugField(null=True, blank=True)
+    category = models.ForeignKey(Category, null=True, blank=True)
+
     objects = FilteredManager()
 
+    class Meta:
+        abstract = True
+
+
+class LayerWorkspace(WorkspaceStorage, LayerContainerMixin):
+    """
+    Define a workspace: lizard-map workspace with extensions.
+
+    TODO: some ExtJS call return function?
+    """
     class Meta:
         ordering = ['name']
 
@@ -397,6 +406,7 @@ class LayerWorkspaceItem(models.Model):
     layer_workspace = models.ForeignKey(LayerWorkspace)
     layer = models.ForeignKey(Layer)
 
+    # What's this?
     filter_string = models.CharField(max_length=124, null=True, blank=True)
 
     visible = models.BooleanField(default=True)
@@ -409,6 +419,33 @@ class LayerWorkspaceItem(models.Model):
 
     def __unicode__(self):
         return '%s %s' % (self.layer_workspace, self.layer)
+
+
+class LayerCollage(LayerContainerMixin):
+    """
+    Layer collage
+    """
+    name = models.CharField(max_length=200)
+    layers = models.ManyToManyField(
+         Layer, through='LayerCollageItem',
+         null=True, blank=True)
+
+    def __unicode__(self):
+        return '%s' % self.name
+
+
+class LayerCollageItem(models.Model):
+    """
+    A single item in a layer collage
+    """
+    layer_collage = models.ForeignKey(LayerCollage)
+    layer = models.ForeignKey(Layer)
+    index = models.IntegerField(default=100)
+    identifier = models.TextField(
+        null=True, blank=True, help_text='identifies one location in one layer')
+
+    def __unicode__(self):
+        return '%s %s' % (self.layer_collage, self.layer)
 
 
 class LayerFolder(AL_Node):

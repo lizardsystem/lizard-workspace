@@ -5,6 +5,7 @@ Changelog of lizard-workspace
 0.4 (unreleased)
 ----------------
 
+- Added models LayerCollage and LayerCollageItem and their migration.
 - Add sync_layers_measure analogous to sync_layers_fewsnorm
 - Add sync_layers_ekr idem
 
