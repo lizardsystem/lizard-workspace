@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.4 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Added models LayerCollage and LayerCollageItem and their migration.
 
 
 0.3 (2012-03-12)
