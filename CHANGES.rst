@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.4 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Add sync_layers_measure analogous to sync_layers_fewsnorm
 
 
 0.3 (2012-03-12)
