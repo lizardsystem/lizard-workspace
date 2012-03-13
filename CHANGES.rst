@@ -2,12 +2,18 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.4 (unreleased)
+0.5 (unreleased)
+----------------
+
+- Nothing changed yet.
+
+
+0.4 (2012-03-13)
 ----------------
 
 - Added models LayerCollage and LayerCollageItem and their migration.
-
-- Add sync_layers_measure analogous to sync_layers_fewsnorm.
+- Add sync_layers_measure analogous to sync_layers_fewsnorm
+- Add sync_layers_ekr idem
 
 
 0.3 (2012-03-12)
