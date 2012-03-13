@@ -6,6 +6,7 @@ Changelog of lizard-workspace
 ----------------
 
 - Add sync_layers_measure analogous to sync_layers_fewsnorm
+- Add sync_layers_ekr idem
 
 
 0.3 (2012-03-12)
