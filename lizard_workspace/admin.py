@@ -2,6 +2,8 @@ from django.contrib import admin
 
 from lizard_workspace.models import Category, LayerFolder, Tag
 from lizard_workspace.models import Layer
+from lizard_workspace.models import LayerCollage
+from lizard_workspace.models import LayerCollageItem
 from lizard_workspace.models import LayerWorkspace
 from lizard_workspace.models import LayerWorkspaceItem
 from lizard_workspace.models import AppScreenAppItems
@@ -17,8 +19,14 @@ from lizard_map.models import WorkspaceStorageItem
 class WorkspaceStorageItemInline(admin.TabularInline):
     model = WorkspaceStorageItem
 
+
 class LayerWorkspaceItemInline(admin.TabularInline):
     model = LayerWorkspaceItem
+
+
+class LayerCollageItemInline(admin.TabularInline):
+    model = LayerCollageItem
+
 
 class AppScreenAppItemsInline(admin.TabularInline):
     model = AppScreenAppItems
@@ -26,6 +34,10 @@ class AppScreenAppItemsInline(admin.TabularInline):
 
 class LayerWorkspaceAdmin(admin.ModelAdmin):
     inlines = [LayerWorkspaceItemInline, WorkspaceStorageItemInline, ]
+
+
+class LayerCollageAdmin(admin.ModelAdmin):
+    inlines = [LayerCollageItemInline, ]
 
 
 class LayerAdmin(admin.ModelAdmin):
@@ -39,8 +51,10 @@ class AppScreenAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name", )}
     inlines = [AppScreenAppItemsInline]
 
+
 class AppAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name", )}
+
 
 #class ThemeAdmin(admin.ModelAdmin):
 #    prepopulated_fields = {"slug": ("name", )}
@@ -61,6 +75,7 @@ class LayerFolderAdmin(admin.ModelAdmin):
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Layer, LayerAdmin)
 admin.site.register(LayerWorkspace, LayerWorkspaceAdmin)
+admin.site.register(LayerCollage, LayerCollageAdmin)
 #admin.site.register(Theme, ThemeAdmin)
 
 admin.site.register(App, AppAdmin)

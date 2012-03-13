@@ -429,9 +429,26 @@ class LayerCollage(LayerContainerMixin):
     layers = models.ManyToManyField(
          Layer, through='LayerCollageItem',
          null=True, blank=True)
+    owner = models.ForeignKey(User, blank=True, null=True)
 
     def __unicode__(self):
         return '%s' % self.name
+
+    def save_workspace_layers(self, linked_records):
+        """Called by the API
+        """
+        pass
+
+    def save_single_many2many_relation(self, record, model_field, linked_records):
+        """Called by the API
+        """
+        pass
+
+    def get_workspace_layers(self):
+        """Called by the API
+        """
+        return []
+
 
 
 class LayerCollageItem(models.Model):

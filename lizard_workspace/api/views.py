@@ -10,6 +10,7 @@ from lizard_api.base import BaseApiView
 from lizard_workspace.models import AppScreen
 from lizard_workspace.models import Layer
 from lizard_workspace.models import LayerFolder
+from lizard_workspace.models import LayerCollage
 from lizard_workspace.models import LayerWorkspace
 
 
@@ -31,11 +32,9 @@ class RootView(View):
             }
 
 
-
-
 class LayerWorkspaceView(BaseApiView):
     """
-        Show organisations for selection and edit
+    API for LayerWorkspace
     """
     model_class = LayerWorkspace
     name_field = 'name'
@@ -96,7 +95,7 @@ class LayerWorkspaceView(BaseApiView):
                     worksp.owner_type,
                     flat
                 ),
-                'read_only': not(worksp.owner_type == LayerWorkspace.OWNER_TYPE_USER)
+                'read_only': not(worksp.owner_type == self.model_class.OWNER_TYPE_USER)
             }
 
         elif size == self.COMPLETE:
@@ -117,11 +116,11 @@ class LayerWorkspaceView(BaseApiView):
                     flat
                 ),
                 'owner_type': self._get_choice(
-                    LayerWorkspace._meta.get_field('owner_type'),
+                    self.model_class._meta.get_field('owner_type'),
                     worksp.owner_type,
                     flat
                 ),
-                'read_only': not(worksp.owner_type == LayerWorkspace.OWNER_TYPE_USER),
+                'read_only': not(worksp.owner_type == self.model_class.OWNER_TYPE_USER),
                 'layers': worksp.get_workspace_layers()
                 #'status_planned': measure.status_moment_string(is_planning=True),
             }
@@ -164,6 +163,16 @@ class LayerWorkspaceView(BaseApiView):
                 model_field,
                 linked_records,
             )
+
+
+class LayerCollageView(LayerWorkspaceView):
+    """
+    API for LayerCollage
+
+    Not sure if this works.. but it should be very similar to the
+    LayerWorkspaceView
+    """
+    model_class = LayerCollage
 
 
 

@@ -11,6 +11,7 @@ from lizard_workspace.api.resources import LayerResource
 # from lizard_workspace.api.resources import WorkspaceResource
 # from lizard_workspace.api.resources import WorkspaceItemResource
 from lizard_workspace.api.views import LayerWorkspaceView
+from lizard_workspace.api.views import LayerCollageView
 from lizard_workspace.api.views import AvailableLayersView
 from lizard_workspace.api.views import AppLayerTreeView
 from lizard_workspace.api.views import AppScreenView
@@ -46,6 +47,9 @@ urlpatterns = patterns(
     url(r'^workspace_view/$',
         LayerWorkspaceView.as_view(),
         name=NAME_PREFIX + 'workspace_view'),
+    url(r'^collage_view/$',
+        LayerCollageView.as_view(),
+        name=NAME_PREFIX + 'collage_view'),
     url(r'^layer_view/$',
         AvailableLayersView.as_view(),
         name=NAME_PREFIX + 'layer_view'),
