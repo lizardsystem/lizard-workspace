@@ -69,7 +69,9 @@ class TagAdmin(admin.ModelAdmin):
 
 
 class LayerFolderAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['name', 'parent']
+    filter_vertical = ('layers','layer_tag',)
+    search_fields = ['name']
 
 
 admin.site.register(Category, CategoryAdmin)
