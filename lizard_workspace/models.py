@@ -1,5 +1,6 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 import json
+import logging
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -11,6 +12,8 @@ from lizard_security.models import DataSet
 from lizard_map.models import WorkspaceStorage
 from lizard_map.models import ADAPTER_CLASS_WMS
 from treebeard.al_tree import AL_Node
+
+logger = logging.getLogger(__name__)
 
 
 class Category(models.Model):
@@ -256,6 +259,7 @@ ction to add an item to your workspace
 
 
         output = {
+            # Pastiaan Layer ID, used to save workspace/collage items
             'plid': self.id,
 
             'use_location_filter': self.use_location_filter,
@@ -346,34 +350,18 @@ class LayerWorkspace(WorkspaceStorage, LayerContainerMixin):
         output = []
 
         for layer_workspace_item in layer_workspace_items:
-            item = {
+            item = layer_workspace_item.layer.get_object_dict()
+            item.update({
                 'order': layer_workspace_item.index,
                 'visibility': layer_workspace_item.visible,
                 'opacity': layer_workspace_item.opacity,
                 'clickable': layer_workspace_item.clickable,
                 'filter_string': layer_workspace_item.filter_string,
-
-                # 'id': layer_workspace_item.layer.id,
-                # 'title': layer_workspace_item.layer.name,
-                # 'text': layer_workspace_item.layer.name,
-                # 'use_location_filter': layer_workspace_item.layer.use_location_filter,
-                # 'location_filter': layer_workspace_item.layer.location_filter,
-
-                # 'ollayer_class': layer_workspace_item.layer.ollayer_class,
-                # 'url': None,
-                # 'layers': layer_workspace_item.layer.layers,
-                # 'filter': layer_workspace_item.layer.filter,
-                # 'request_params': layer_workspace_item.layer.request_params,
-
-                # 'is_base_layer': layer_workspace_item.layer.is_base_layer,
-                # 'single_tile': layer_workspace_item.layer.single_tile,
-                # 'options': layer_workspace_item.layer.options,
-
-            }
+            })
             # Note: is_clickable is whether the layer is clickable at
             # all, clickable is the user-selected option if the layer
             # is clickable.
-            item.update(layer_workspace_item.layer.get_object_dict())
+
             # if layer_workspace_item.layer.server:
             #     item['url'] = layer_workspace_item.layer.server.url
 
@@ -436,18 +424,51 @@ class LayerCollage(LayerContainerMixin):
 
     def save_workspace_layers(self, linked_records):
         """Called by the API
+
+        necessary properties:
+        - name
+        - plid (= Layer.id)
+        - identifier
         """
-        pass
+        logger.debug('save_workspace_layers')
+        logger.debug(linked_records)
+        for record in linked_records:
+            layer = Layer.objects.get(pk=record['plid'])
+            collage_item, created = self.layercollageitem_set.get_or_create(
+                name=record.get('name', 'naamloos'),
+                layer=layer, identifier=record['identifier'],
+                index=record.get('index', 100))
+        return True
 
     def save_single_many2many_relation(self, record, model_field, linked_records):
         """Called by the API
         """
+        logger.debug('save_single_many2many_relation')
+        logger.debug('record: %s' % record)
+        logger.debug('model_field: %s' % model_field)
+        logger.debug('linked_records: %s' % linked_records)
         pass
 
     def get_workspace_layers(self):
-        """Called by the API
+        """Called by the API after loading a collage.
         """
-        return []
+        logger.debug('get_workspace_layers')
+        result = []
+
+        layer_collage_items = self.layercollageitem_set.all().order_by(
+            'index').select_related('layer')
+
+        output = []
+
+        for layer_collage_item in layer_collage_items:
+            item = layer_collage_item.layer.get_object_dict()
+            item.update({
+                'order': layer_collage_item.index,
+                'title': layer_collage_item.name  # overwrites layer name. This gets displayed
+            })
+            result.append(item)
+
+        return result
 
 
 
@@ -455,6 +476,7 @@ class LayerCollageItem(models.Model):
     """
     A single item in a layer collage
     """
+    name = models.CharField(max_length=200)
     layer_collage = models.ForeignKey(LayerCollage)
     layer = models.ForeignKey(Layer)
     index = models.IntegerField(default=100)
