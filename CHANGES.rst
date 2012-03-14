@@ -5,7 +5,9 @@ Changelog of lizard-workspace
 0.5 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Updated sync_layers_with_wmsserver: field js_popup_class will only
+  be overwritten in existing layers if layer.js_popup_class is empty
+  and the server js_popup_class is not empty.
 
 
 0.4 (2012-03-13)
