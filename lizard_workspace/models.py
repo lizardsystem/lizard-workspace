@@ -466,7 +466,6 @@ class LayerCollage(LayerContainerMixin):
                 'order': layer_collage_item.index,
                 'title': layer_collage_item.name  # overwrites layer name. This gets displayed
             })
-            print item
             result.append(item)
 
         return result
