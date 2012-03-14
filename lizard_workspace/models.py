@@ -435,6 +435,7 @@ class LayerCollage(LayerContainerMixin):
         for record in linked_records:
             layer = Layer.objects.get(pk=record['plid'])
             collage_item, created = self.layercollageitem_set.get_or_create(
+                name=record.get('name', 'naamloos'),
                 layer=layer, identifier=record['identifier'],
                 index=record.get('index', 100))
         return True
