@@ -5,6 +5,8 @@ Changelog of lizard-workspace
 0.5 (unreleased)
 ----------------
 
+- Added collage model functions for loading and saving collages.
+
 - Updated sync_layers_with_wmsserver: field js_popup_class will only
   be overwritten in existing layers if layer.js_popup_class is empty
   and the server js_popup_class is not empty.
