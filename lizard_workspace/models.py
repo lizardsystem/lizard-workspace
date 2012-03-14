@@ -450,10 +450,26 @@ class LayerCollage(LayerContainerMixin):
         pass
 
     def get_workspace_layers(self):
-        """Called by the API
+        """Called by the API after loading a collage.
         """
         logger.debug('get_workspace_layers')
-        return []
+        result = []
+
+        layer_collage_items = self.layercollageitem_set.all().order_by(
+            'index').select_related('layer')
+
+        output = []
+
+        for layer_collage_item in layer_collage_items:
+            item = layer_collage_item.layer.get_object_dict()
+            item.update({
+                'order': layer_collage_item.index,
+                'title': layer_collage_item.name  # overwrites layer name. This gets displayed
+            })
+            print item
+            result.append(item)
+
+        return result
 
 
 
