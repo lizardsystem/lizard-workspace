@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.5 (unreleased)
+0.5 (2012-03-15)
 ----------------
 
 - Added LayerCollageItem.name and migration.
