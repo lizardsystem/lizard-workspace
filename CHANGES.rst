@@ -13,6 +13,12 @@ Changelog of lizard-workspace
   be overwritten in existing layers if layer.js_popup_class is empty
   and the server js_popup_class is not empty.
 
+- added username and password for servers (for later implementation)
+
+- some admin improvements
+
+- implement selection of workspaces
+
 
 0.4 (2012-03-13)
 ----------------
