@@ -77,6 +77,11 @@ class WmsServer(models.Model):
         help_text="Lizard.popup.&lt;js_popup_class>")
     abstract = models.TextField(blank=True, default='')
 
+    username = models.CharField(max_length=128, blank=True, null=True)
+    password = models.CharField(max_length=128, blank=True, null=True)
+
+    enable_proxy = models.BooleanField(default=False)
+
     def __unicode__(self):
         return self.name
 

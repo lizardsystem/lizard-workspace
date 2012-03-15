@@ -58,8 +58,22 @@ class LayerWorkspaceView(BaseApiView):
         'tmp',
         'category',
         'data_set',
-        'type'
+        'type',
+        'read_only'
     ]
+
+    use_filtered_model = True
+
+
+    def get_filtered_model(self, request):
+
+        return self.model_class.objects.filter(
+                   owner=request.user,
+                   owner_type=LayerWorkspace.OWNER_TYPE_USER
+            ) | self.model_class.objects.exclude(
+            owner_type=LayerWorkspace.OWNER_TYPE_USER)
+
+
 
     def get_object_for_api(self,
                            worksp,
@@ -67,7 +81,7 @@ class LayerWorkspaceView(BaseApiView):
                            size=BaseApiView.COMPLETE,
                            include_geom=False):
         """
-        create object of measure
+        create object of workspace
         """
         if size == self.ID_NAME:
             output = {
@@ -122,7 +136,6 @@ class LayerWorkspaceView(BaseApiView):
                 ),
                 'read_only': not(worksp.owner_type == self.model_class.OWNER_TYPE_USER),
                 'layers': worksp.get_workspace_layers()
-                #'status_planned': measure.status_moment_string(is_planning=True),
             }
         return output
 

@@ -41,6 +41,7 @@ class LayerCollageAdmin(admin.ModelAdmin):
 
 
 class LayerAdmin(admin.ModelAdmin):
+    search_fields = ['name']
     list_filter = ('valid', 'data_set', 'source_ident', 'is_local_server', )
     list_display = ('name', 'valid', 'data_set', 'source_ident',
                     'filter', 'is_local_server', 'tags_str')
@@ -73,6 +74,10 @@ class LayerFolderAdmin(admin.ModelAdmin):
     filter_vertical = ('layers','layer_tag',)
     search_fields = ['name']
 
+class SyncTaskAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug', 'server', 'data_set', 'tag', 'last_sync', 'last_result']
+    search_fields = ['name']
+
 
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Layer, LayerAdmin)
@@ -86,5 +91,5 @@ admin.site.register(AppIcons)
 
 admin.site.register(LayerFolder, LayerFolderAdmin)
 admin.site.register(Tag, TagAdmin)
-admin.site.register(SyncTask)
+admin.site.register(SyncTask, SyncTaskAdmin)
 admin.site.register(WmsServer)

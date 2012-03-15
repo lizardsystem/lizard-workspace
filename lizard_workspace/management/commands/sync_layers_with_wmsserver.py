@@ -62,8 +62,10 @@ Example: bin/django sync_layers_with_wmsserver --sync_task=<slug of SyncTask> --
 
             data_set = task.data_set
             service_url = task.server.url
+            password = task.server.password
+            username = task.server.username
 
-            wms = WebMapService(service_url, version='1.1.1')
+            wms = WebMapService(service_url, version='1.1.1', password=password, username=username)
 
             if task.tag:
                 tag, new = task.tag, False
@@ -132,7 +134,7 @@ Example: bin/django sync_layers_with_wmsserver --sync_task=<slug of SyncTask> --
 
             logger.info('%i new layers: %s.'%(new, str(', '.join(new_names))))
             logger.info('%i updated layers.'%(updated))
-            logger.info('%i removed layers: %s.'%(new, str(', '.join(removed_names))))
+            logger.info('%i removed layers: %s.'%(removed, str(', '.join(removed_names))))
 
             task.last_sync = datetime.datetime.now()
             task.last_result = '%i new, %i updated, %i removed'%(new, updated, removed)
