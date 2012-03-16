@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.6 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Add prefix field to server model and a migration for it, too.
 
 
 0.5 (2012-03-15)
