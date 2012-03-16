@@ -79,6 +79,7 @@ class WmsServer(models.Model):
 
     username = models.CharField(max_length=128, blank=True, null=True)
     password = models.CharField(max_length=128, blank=True, null=True)
+    ws_prefix = models.CharField(max_length=128, blank=True, null=True)
 
     enable_proxy = models.BooleanField(default=False)
 
