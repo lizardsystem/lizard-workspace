@@ -442,7 +442,8 @@ class LayerCollage(LayerContainerMixin):
                 name=record.get('name', 'naamloos'),
                 layer=layer,
                 identifier=record['identifier'],
-                index=record.get('index', 100))
+                index=record.get('index', 100),
+                grouping_hint=record.get('grouping_hint', ''))
         return True
 
     def save_single_many2many_relation(self, record, model_field, linked_records):
@@ -467,15 +468,19 @@ class LayerCollage(LayerContainerMixin):
 
         for layer_collage_item in layer_collage_items:
             item = layer_collage_item.layer.get_object_dict()
+            # The 'title' gets displayed. Overwrites 'layer.name'
+            # The 'name' gets 'saved' using get_or_create. Important
+            # that it's provided.
             item.update({
                 'order': layer_collage_item.index,
-                'title': layer_collage_item.name,  # overwrites layer name. This gets displayed
-                'identifier': layer_collage_item.identifier
+                'name': layer_collage_item.name,
+                'title': layer_collage_item.name,
+                'identifier': layer_collage_item.identifier,
+                'grouping_hint': layer_collage_item.grouping_hint
             })
             result.append(item)
 
         return result
-
 
 
 class LayerCollageItem(models.Model):
@@ -488,6 +493,12 @@ class LayerCollageItem(models.Model):
     index = models.IntegerField(default=100)
     identifier = models.TextField(
         null=True, blank=True, help_text='identifies one location in one layer')
+    grouping_hint = models.CharField(
+        max_length=200, null=True, blank=True,
+        help_text='same grouping hints are grouped together in a popup')
+
+    class Meta:
+        ordering = ('grouping_hint', 'name', )
 
     def __unicode__(self):
         return '%s %s' % (self.layer_collage, self.layer)

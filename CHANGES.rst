@@ -2,15 +2,24 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.9 (unreleased)
-----------------
+0.8.2 (unreleased)
+------------------
 
+- Collage api now returns 'name' as well as 'title' to ensure correct
+  displaying in front end.
 - Make wmsserver objects use relative paths.
+
+
+0.8.1 (2012-03-19)
+------------------
+
+- Fixed bug in saving/loading collages.
 
 
 0.8 (2012-03-19)
 ----------------
 
+- Added grouping_hint to CollageItem.
 - Fix bug in management command
 
 
