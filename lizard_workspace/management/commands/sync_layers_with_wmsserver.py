@@ -7,6 +7,8 @@ from django.db import transaction
 
 from owslib.wms import WebMapService
 
+
+from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 from django.template.defaultfilters import slugify
 
@@ -16,16 +18,23 @@ from lizard_workspace.models import SyncTask
 
 from optparse import make_option
 
-
 logger = logging.getLogger(__name__)
 
+
+url_prefix = 'http://' + Site.objects.get().domain
+if url_prefix.endswith('www.example.com'):
+    url_prefix = 'http://localhost:8000'
 
 @transaction.commit_on_success
 def perform_sync_task(task):
     logger.info('start with sync of server %s' % task.server.name)
 
     data_set = task.data_set
-    service_url = task.server.url
+    if task.server.is_local_server:
+        service_url = url_prefix + task.server.url
+    else:
+        service_url = task.server.url
+    print service_url
     password = task.server.password
     username = task.server.username
 
