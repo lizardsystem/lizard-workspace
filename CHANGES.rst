@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.8.2 (unreleased)
+0.8.2 (2012-03-19)
 ------------------
 
 - Collage api now returns 'name' as well as 'title' to ensure correct
