@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.8 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Fix bug in management command
 
 
 0.7 (2012-03-19)

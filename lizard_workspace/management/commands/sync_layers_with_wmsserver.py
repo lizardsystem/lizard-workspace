@@ -92,7 +92,8 @@ def perform_sync_task(task):
 
         #nog iets met styles?
 
-    for name, id in layer_dict:
+
+    for name, id in layer_dict.items():
         layer = layers.get(pk=id)
         layer.valid = False
         layer.save()
