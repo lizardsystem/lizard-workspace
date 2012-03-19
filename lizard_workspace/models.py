@@ -470,14 +470,13 @@ class LayerCollage(LayerContainerMixin):
             item = layer_collage_item.layer.get_object_dict()
             item.update({
                 'order': layer_collage_item.index,
-                'title': layer_collage_item.name,  # overwrites layer name. This gets displayed
+                'name': layer_collage_item.name,
                 'identifier': layer_collage_item.identifier,
                 'grouping_hint': layer_collage_item.grouping_hint
             })
             result.append(item)
 
         return result
-
 
 
 class LayerCollageItem(models.Model):
