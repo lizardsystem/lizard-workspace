@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.7 (unreleased)
+0.7 (2012-03-19)
 ----------------
 
 - Add exception handling and commit on success to wmssync management command.
