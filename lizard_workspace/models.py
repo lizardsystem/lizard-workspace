@@ -468,9 +468,13 @@ class LayerCollage(LayerContainerMixin):
 
         for layer_collage_item in layer_collage_items:
             item = layer_collage_item.layer.get_object_dict()
+            # The 'title' gets displayed. Overwrites 'layer.name'
+            # The 'name' gets 'saved' using get_or_create. Important
+            # that it's provided.
             item.update({
                 'order': layer_collage_item.index,
                 'name': layer_collage_item.name,
+                'title': layer_collage_item.name,
                 'identifier': layer_collage_item.identifier,
                 'grouping_hint': layer_collage_item.grouping_hint
             })
