@@ -2,8 +2,8 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.9 (unreleased)
-----------------
+0.8.1 (2012-03-19)
+------------------
 
 - Fixed bug in saving/loading collages.
 
