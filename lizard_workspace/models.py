@@ -494,6 +494,9 @@ class LayerCollageItem(models.Model):
         max_length=200, null=True, blank=True,
         help_text='same grouping hints are grouped together in a popup')
 
+    class Meta:
+        ordering = ('grouping_hint', 'name', )
+
     def __unicode__(self):
         return '%s %s' % (self.layer_collage, self.layer)
 
