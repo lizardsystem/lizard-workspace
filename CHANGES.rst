@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.7 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Added grouping_hint to CollageItem.
 
 
 0.6 (2012-03-16)
