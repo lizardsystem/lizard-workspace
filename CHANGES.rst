@@ -2,10 +2,16 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.7 (unreleased)
+0.8 (unreleased)
 ----------------
 
 - Added grouping_hint to CollageItem.
+
+
+0.7 (2012-03-19)
+----------------
+
+- Add exception handling and commit on success to wmssync management command.
 
 
 0.6 (2012-03-16)
