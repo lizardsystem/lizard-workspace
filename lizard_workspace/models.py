@@ -262,8 +262,6 @@ ction to add an item to your workspace
             return 'no tags'
 
     def get_object_dict(self):
-
-
         output = {
             # Pastiaan Layer ID, used to save workspace/collage items
             'plid': self.id,
@@ -442,7 +440,8 @@ class LayerCollage(LayerContainerMixin):
             layer = Layer.objects.get(pk=record['plid'])
             collage_item, created = self.layercollageitem_set.get_or_create(
                 name=record.get('name', 'naamloos'),
-                layer=layer, identifier=record['identifier'],
+                layer=layer,
+                identifier=record['identifier'],
                 index=record.get('index', 100))
         return True
 
@@ -470,7 +469,8 @@ class LayerCollage(LayerContainerMixin):
             item = layer_collage_item.layer.get_object_dict()
             item.update({
                 'order': layer_collage_item.index,
-                'title': layer_collage_item.name  # overwrites layer name. This gets displayed
+                'title': layer_collage_item.name,  # overwrites layer name. This gets displayed
+                'identifier': layer_collage_item.identifier
             })
             result.append(item)
 

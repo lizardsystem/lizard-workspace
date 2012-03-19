@@ -35,7 +35,7 @@ Example: bin/django sync_layers_fewsnorm --slug=<slug of existing Layer>
         make_option('--slug',
                     help='slug of existing Layer',
                     type='str',
-                    default='fews_locations'),)
+                    default='vss_fews_locations'),)
 
     @transaction.commit_on_success
     def handle(self, *args, **options):
