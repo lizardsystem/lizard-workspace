@@ -16,14 +16,13 @@ from lizard_workspace.models import Tag
 from lizard_workspace.models import Layer
 from lizard_workspace.models import SyncTask
 
+from lizard_layers.models import ServerMapping
+
 from optparse import make_option
+import re
 
 logger = logging.getLogger(__name__)
 
-
-url_prefix = 'http://' + Site.objects.get().domain
-if url_prefix.endswith('www.example.com'):
-    url_prefix = 'http://localhost:8000'
 
 @transaction.commit_on_success
 def perform_sync_task(task):
@@ -31,10 +30,19 @@ def perform_sync_task(task):
 
     data_set = task.data_set
     if task.server.is_local_server:
-        service_url = url_prefix + task.server.url
+        path_and_parameters = task.server.url.split('?')
+        path = path_and_parameters[0]
+        regex =  r'^' + path + r'/?$'
+        external_server = ServerMapping.objects.get(
+            relative_path__regex=regex,
+        ).external_server
+        if len(path_and_parameters) > 1:
+            parameters = path_and_parameters[1]
+            service_url = external_server + '?' + parameters
+        else:
+            service_url = external_server
     else:
         service_url = task.server.url
-    print service_url
     password = task.server.password
     username = task.server.username
 
@@ -158,6 +166,7 @@ Example: bin/django sync_layers_with_wmsserver --sync_task=<slug of SyncTask> --
 
 
         for task in tasks:
+            perform_sync_task(task=task)
             try:
                 perform_sync_task(task=task)
             except Exception as e:

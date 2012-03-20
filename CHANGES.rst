@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.10 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Fix sync_layers_with_wmsserver script requiring running server.
 
 
 0.9 (2012-03-19)
