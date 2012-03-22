@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.9.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fixed bug where each synctask ran twice...
 
 
 0.9.1 (2012-03-20)

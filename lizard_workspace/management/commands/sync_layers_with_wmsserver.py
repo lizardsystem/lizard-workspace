@@ -166,7 +166,6 @@ Example: bin/django sync_layers_with_wmsserver --sync_task=<slug of SyncTask> --
 
 
         for task in tasks:
-            perform_sync_task(task=task)
             try:
                 perform_sync_task(task=task)
             except Exception as e:
