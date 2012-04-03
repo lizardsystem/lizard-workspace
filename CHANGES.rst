@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.9.3 (unreleased)
+0.9.3 (2012-04-03)
 ------------------
 
 - Add general purpose management command for updating things.
