@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.9.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Correct comment
 
 
 0.9.3 (2012-04-03)

@@ -176,7 +176,7 @@ class Command(BaseCommand):
             index=40,
         )
 
-        # Waterloop
+        # Waterlichaam
         layer = _create_or_replace_merged_layer(
             slug='krw_waterlichaam',
             name='KRW-waterlichaam',
