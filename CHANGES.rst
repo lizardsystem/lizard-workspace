@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.9.4 (unreleased)
+0.9.4 (2012-04-04)
 ------------------
 
 - Improved workspace_update command
