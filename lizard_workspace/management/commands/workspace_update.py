@@ -79,27 +79,26 @@ class Command(BaseCommand):
             osm = Layer.objects.get(name='OpenStreetMap')
 
         # Remove anything except osm
-            Layer.objects.filter(
-                is_base_layer=True,
-            ).exclude(
-                pk=osm.pk,
-            ).update(is_base_layer=False)
+        Layer.objects.filter(
+            is_base_layer=True,
+        ).exclude(
+            pk=osm.pk,
+        ).update(is_base_layer=False)
 
         # Remove old baselayer(s) for the top10nl if it exists
-            Layer.objects.filter(slug=TOP10NL_LAYER_SLUG).delete()
+        Layer.objects.filter(slug=TOP10NL_LAYER_SLUG).delete()
 
         # Add a baselayer for the top10nl
-            tag = Tag.objects.get(slug=TOP10NL_TAG_SLUG)
-            top10_layers = tag.layer_set.all()
-            new_layer = top10_layers[0]
-            new_layer.name = 'Top10NL'
-            new_layer.slug = TOP10NL_LAYER_SLUG
-            new_layer.is_base_layer = True
-            new_layer.layers = ','.join(l.layers for l in top10_layers)
-            new_layer.source_ident = None
-            new_layer.pk = None  # We want a new layer.
-            new_layer.save()
-            new_layer.tags.clear()
+        tag = Tag.objects.get(slug=TOP10NL_TAG_SLUG)
+        top10_layers = tag.layer_set.all()
+        new_layer = top10_layers[0]
+        new_layer.name = 'Top10NL'
+        new_layer.slug = TOP10NL_LAYER_SLUG
+        new_layer.is_base_layer = True
+        new_layer.layers = ','.join(l.layers for l in top10_layers)
+        new_layer.source_ident = None
+        new_layer.pk = None  # We want a new layer.
+        new_layer.save()
 
     def _watersystem(self):
         """
@@ -174,6 +173,20 @@ class Command(BaseCommand):
             layer=layer,
             visible=False,
             index=40,
+        )
+
+        # Oppervlake waterdeel
+        layer = _create_or_replace_merged_layer(
+            slug='oppervlakte-waterdeel-basis',
+            name='Oppervlakte waterdeel',
+            tag=tag,
+            layers=['wsh:oppervlakte_waterdeel'],
+        )
+        LayerWorkspaceItem.objects.create(
+            layer_workspace=layer_workspace,
+            layer=layer,
+            visible=False,
+            index=50,
         )
 
         # Waterlichaam

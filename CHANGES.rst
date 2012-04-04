@@ -5,7 +5,8 @@ Changelog of lizard-workspace
 0.9.4 (unreleased)
 ------------------
 
-- Correct comment
+- Improved workspace_update command
+- Add layer to workspace_update command
 
 
 0.9.3 (2012-04-03)
