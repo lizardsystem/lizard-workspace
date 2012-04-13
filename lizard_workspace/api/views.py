@@ -22,13 +22,10 @@ class RootView(View):
         return {
             'workspace': {
                 'name': 'identifier',
-                'url': reverse("lizard_workspace_api_workspace_list")},
-            'workspace-item': {
+                'url': reverse("lizard_workspace_api_workspace_view")},
+            'collage': {
                 'name': 'identifier',
-                'url': reverse("lizard_workspace_api_workspace_item_list")},
-            'layer': {
-                'name': 'source',
-                'url': reverse("lizard_workspace_api_layer_list")},
+                'url': reverse("lizard_workspace_api_collage_view")},
             }
 
 
