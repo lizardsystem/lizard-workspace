@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.9.5 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Add dependency on lizard_map to migration.
 
 
 0.9.4 (2012-04-04)
