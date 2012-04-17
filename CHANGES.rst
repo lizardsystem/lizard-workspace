@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.9.6 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Change name of layer in workspace update script for baselayers.
 
 
 0.9.5 (2012-04-16)

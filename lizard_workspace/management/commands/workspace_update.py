@@ -217,7 +217,7 @@ class Command(BaseCommand):
         )
 
         layer = Layer.objects.get(slug='witte-waas-gebieden')
-        layer.name = 'Witte waas'
+        layer.name = 'Masker'
         layer.save()
         LayerWorkspaceItem.objects.create(
             layer_workspace=layer_workspace,
