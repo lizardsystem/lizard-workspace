@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.9.7 (unreleased)
+0.9.7 (2012-04-19)
 ------------------
 
 - Add analyse interpretaties to workspace_update command.
