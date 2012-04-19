@@ -216,6 +216,16 @@ class Command(BaseCommand):
             index=70,
         )
 
+        layer = Layer.objects.get(slug='vss_annotation')
+        layer.name = 'Analyse interpretaties'
+        layer.save()
+        LayerWorkspaceItem.objects.create(
+            layer_workspace=layer_workspace,
+            layer=layer,
+            visible=False,
+            index=80,
+        )
+
         layer = Layer.objects.get(slug='witte-waas-gebieden')
         layer.name = 'Masker'
         layer.save()
