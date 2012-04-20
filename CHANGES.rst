@@ -5,7 +5,8 @@ Changelog of lizard-workspace
 0.9.8 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Update workspace_update command to add popup classes for
+  annotations and measures.
 
 
 0.9.7 (2012-04-19)

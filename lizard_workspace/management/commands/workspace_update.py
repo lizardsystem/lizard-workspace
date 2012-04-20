@@ -208,6 +208,7 @@ class Command(BaseCommand):
 
         layer = Layer.objects.get(slug='vss_measure')
         layer.name = 'Maatregelen'
+        layer.js_popup_class = 'MeasurePopup'
         layer.save()
         LayerWorkspaceItem.objects.create(
             layer_workspace=layer_workspace,
@@ -218,6 +219,7 @@ class Command(BaseCommand):
 
         layer = Layer.objects.get(slug='vss_annotation')
         layer.name = 'Analyse interpretaties'
+        layer.js_popup_class = 'AnnotationPopup'
         layer.save()
         LayerWorkspaceItem.objects.create(
             layer_workspace=layer_workspace,
