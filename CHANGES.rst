@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.9.8 (unreleased)
+0.9.8 (2012-04-20)
 ------------------
 
 - Update workspace_update command to add popup classes for
