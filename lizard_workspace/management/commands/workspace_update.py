@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from django.core.management.base import BaseCommand
+from django.utils import simplejson
 from django.db import transaction
 
 import optparse
@@ -69,6 +70,8 @@ class Command(BaseCommand):
         """
         TOP10NL_LAYER_SLUG = 'top10nl'
         TOP10NL_TAG_SLUG = 'server_pdok-top10'
+        SEMI_TRANSPARENT_SLUG_POSTFIX = '-semi-transparent'
+        SEMI_TRANSPARENT_NAME_POSTFIX = ' (semitransparant)'
 
         # Get open streetmap, rename if necessary
         try:
@@ -95,10 +98,33 @@ class Command(BaseCommand):
         new_layer.name = 'Top10NL'
         new_layer.slug = TOP10NL_LAYER_SLUG
         new_layer.is_base_layer = True
+        new_layer.source_ident='workspace-update-command',
         new_layer.layers = ','.join(l.layers for l in top10_layers)
         new_layer.source_ident = None
         new_layer.pk = None  # We want a new layer.
         new_layer.save()
+
+        logger.info('Created default baselayers.')
+
+        # Add or replace baselayers with 50% opacity
+        base_layers = Layer.objects.filter(is_base_layer=True)
+        Layer.objects.filter(
+            slug__in=[b.slug + SEMI_TRANSPARENT_SLUG_POSTFIX
+                      for b in base_layers],
+        ).delete()
+        
+        for b in base_layers:
+            options = simplejson.loads(b.options)
+            options.update(opacity=0.5)
+            b.pk = None  # Clone the layer
+            b.source_ident='workspace-update-command'
+            b.slug += SEMI_TRANSPARENT_SLUG_POSTFIX
+            b.name += SEMI_TRANSPARENT_NAME_POSTFIX 
+            b.options = simplejson.dumps(options)
+            b.save()
+        
+        logger.info('Added transparent variants of default baselayers.')
+
 
     def _watersystem(self):
         """
@@ -127,6 +153,7 @@ class Command(BaseCommand):
         LayerWorkspaceItem.objects.create(
             layer_workspace=layer_workspace,
             layer=layer,
+            visible=True,
             index=10,
         )
             
@@ -234,9 +261,11 @@ class Command(BaseCommand):
         LayerWorkspaceItem.objects.create(
             layer_workspace=layer_workspace,
             layer=layer,
-            visible=False,
+            visible=True,
             index=90,
         )
+
+        logger.info('Reinstalled watersystem workspace.')
 
     @transaction.commit_on_success
     def handle(self, *args, **options):
