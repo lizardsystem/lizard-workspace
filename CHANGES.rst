@@ -2,8 +2,8 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.9.9 (unreleased)
-------------------
+0.10 (2012-04-23)
+-----------------
 
 - Modify update script to reconfigure watersystem and baselayers.
 
