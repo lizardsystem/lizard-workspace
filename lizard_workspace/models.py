@@ -531,7 +531,9 @@ class LayerFolder(AL_Node):
         layers = (
             self.layers.all() |
             Layer.objects.filter(
-                tags__in=self.layer_tag.all())).distinct().order_by('name')
+                tags__in=self.layer_tag.all(),
+                valid=True,
+            )).distinct().order_by('name')
 
         output = []
 
