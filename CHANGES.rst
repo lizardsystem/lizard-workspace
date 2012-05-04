@@ -2,8 +2,8 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.11 (unreleased)
------------------
+0.10.1 (2012-05-04)
+-------------------
 
 - Restrict tree in appscreen to visible layers.
 
