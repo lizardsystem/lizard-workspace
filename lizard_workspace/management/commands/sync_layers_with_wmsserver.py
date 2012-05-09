@@ -2,13 +2,10 @@
 # Copyright 2011 Nelen & Schuurmans
 import logging
 import datetime
-from django.conf import settings
 from django.db import transaction
 
 from owslib.wms import WebMapService
 
-
-from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 from django.template.defaultfilters import slugify
 
@@ -19,7 +16,6 @@ from lizard_workspace.models import SyncTask
 from lizard_layers.models import ServerMapping
 
 from optparse import make_option
-import re
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +28,7 @@ def perform_sync_task(task):
     if task.server.is_local_server:
         path_and_parameters = task.server.url.split('?')
         path = path_and_parameters[0]
-        regex =  r'^' + path + r'/?$'
+        regex = r'^' + path + r'/?$'
         external_server = ServerMapping.objects.get(
             relative_path__regex=regex,
         ).external_server
@@ -47,7 +43,7 @@ def perform_sync_task(task):
     username = task.server.username
 
     wms = WebMapService(
-        service_url, 
+        service_url,
         version='1.1.1',
         password=password,
         username=username,
@@ -56,7 +52,8 @@ def perform_sync_task(task):
     if task.tag:
         tag, new = task.tag, False
     else:
-        tag, new = Tag.objects.get_or_create(slug='server_%s'%task.server.name)
+        tag, new = Tag.objects.get_or_create(
+            slug='server_%s' % task.server.name)
 
     # layers = Layer.objects.filter(server=task.server)
     layers = Layer.objects.filter(source_ident=task.source_ident)
@@ -109,7 +106,6 @@ def perform_sync_task(task):
 
         #nog iets met styles?
 
-
     for name, id in layer_dict.items():
         layer = layers.get(pk=id)
         layer.valid = False
@@ -118,15 +114,17 @@ def perform_sync_task(task):
         removed += 1
         removed_names.append(layer.name)
 
-
-    logger.info('%i new layers: %s.'%(new, str(', '.join(new_names))))
-    logger.info('%i updated layers.'%(updated))
-    logger.info('%i removed layers: %s.'%(removed, str(', '.join(removed_names))))
+    logger.info('%i new layers: %s.' % (new, str(', '.join(new_names))))
+    logger.info('%i updated layers.' % (updated))
+    logger.info('%i removed layers: %s.' % (
+            removed, str(', '.join(removed_names))))
 
     task.last_sync = datetime.datetime.now()
-    task.last_result = '%i new, %i updated, %i removed'%(new, updated, removed)
+    task.last_result = '%i new, %i updated, %i removed' % (
+        new, updated, removed)
 
     task.save()
+
 
 class Command(BaseCommand):
     help = ("""
@@ -148,7 +146,6 @@ Example: bin/django sync_layers_with_wmsserver --sync_task=<slug of SyncTask> --
                     help='sync all tasks',
                     default=False))
 
-
     def handle(self, *args, **options):
 
         logger.info('start sync')
@@ -164,7 +161,6 @@ Example: bin/django sync_layers_with_wmsserver --sync_task=<slug of SyncTask> --
             task = SyncTask.objects.get(slug=options['sync_task'])
             tasks = [task]
 
-
         for task in tasks:
             try:
                 perform_sync_task(task=task)
@@ -173,4 +169,3 @@ Example: bin/django sync_layers_with_wmsserver --sync_task=<slug of SyncTask> --
                 print e
                 continue
         return 'Klaar'
-
