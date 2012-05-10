@@ -2,8 +2,8 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.10.2 (unreleased)
--------------------
+0.11 (2012-05-10)
+-----------------
 
 - Converted management commands to celery tasks.
 
