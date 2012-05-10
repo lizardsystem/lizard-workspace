@@ -16,6 +16,7 @@ install_requires = [
     'pkginfo',
     'lizard-map',
     'lizard-fewsnorm',
+    'lizard-task',
     'OWSLib'
     ],
 
