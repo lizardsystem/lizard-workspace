@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.12 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Updated task sync_layers_ekr to include esf layers as well.
 
 
 0.11 (2012-05-10)

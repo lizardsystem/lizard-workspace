@@ -24,6 +24,9 @@ logger = logging.getLogger(LOGGER_NAME)
 @task
 def sync_layers_ekr(
     slug='vss_area_value', username=None, taskname=None, loglevel=20):
+    """
+    Actually: sync_layers for ekr and esf.
+    """
 
     # Set up logging
     handler = get_handler(username=username, taskname=taskname)
@@ -51,16 +54,27 @@ def sync_layers_ekr(
 
     count_update, count_new = 0, 0
 
-    group_tag = 'ekr-layers'
+    group_tag_ekr = 'ekr-layers'
+    group_tag_esf = 'esf-layers'
     name_cql_style = (
-        ('EKR VIS', "name = 'EKR-VIS'", 'vss_ekr_value'),
-        ('EKR FYTOPL', "name = 'EKR-FYTOPL'", 'vss_ekr_value'),
-        ('EKR MAFAUNA', "name = 'EKR-MAFAUNA'", 'vss_ekr_value'),
-        ('EKR OVWFLORA', "name = 'EKR-OVWFLORA'", 'vss_ekr_value'),
-        ('EKR Minst gunstig', "name = 'EKR-ONGUNSTIG'", 'vss_ekr_value'),
-        ('EKR Doelstelling', "name = 'EKR-DOELSCORE'", 'vss_ekr_score'),
+        ('EKR VIS', "name = 'EKR-VIS'", 'vss_ekr_value', group_tag_ekr),
+        ('EKR FYTOPL', "name = 'EKR-FYTOPL'", 'vss_ekr_value', group_tag_ekr),
+        ('EKR MAFAUNA', "name = 'EKR-MAFAUNA'", 'vss_ekr_value', group_tag_ekr),
+        ('EKR OVWFLORA', "name = 'EKR-OVWFLORA'", 'vss_ekr_value', group_tag_ekr),
+        ('EKR Minst gunstig', "name = 'EKR-ONGUNSTIG'", 'vss_ekr_value', group_tag_ekr),
+        ('EKR Doelstelling', "name = 'EKR-DOELSCORE'", 'vss_ekr_score', group_tag_ekr),
+        ('ESF 1', "name = 'ESF-1'", 'vss_esf', group_tag_esf),
+        ('ESF 2', "name = 'ESF-2'", 'vss_esf', group_tag_esf),
+        ('ESF 3', "name = 'ESF-3'", 'vss_esf', group_tag_esf),
+        ('ESF 4', "name = 'ESF-4'", 'vss_esf', group_tag_esf),
+        ('ESF 5', "name = 'ESF-5'", 'vss_esf', group_tag_esf),
+        ('ESF 6', "name = 'ESF-6'", 'vss_esf', group_tag_esf),
+        ('ESF 7', "name = 'ESF-7'", 'vss_esf', group_tag_esf),
+        ('ESF 8', "name = 'ESF-8'", 'vss_esf', group_tag_esf),
+        ('ESF 9', "name = 'ESF-9'", 'vss_esf', group_tag_esf),
+        ('ESF STATUS', "name = 'ESF-STATUS'", 'vss_esf', group_tag_esf),
     )
-    for name, cql, style in name_cql_style:
+    for name, cql, style, group_tag in name_cql_style:
 
         instance_slug = slugify(name)
         if instance_slug in existing_layers:
