@@ -4,9 +4,12 @@
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
-from lizard_workspace.tasks import workspace_update_baselayers
-from lizard_workspace.tasks import workspace_update_watersystem
-from lizard_workspace.tasks import workspace_update_trackrecords
+from lizard_workspace.tasks import (
+    workspace_update_baselayers,
+    workspace_update_watersystem,
+    workspace_update_trackrecords,
+    workspace_update_minimap,
+)
 
 import optparse
 
@@ -32,6 +35,7 @@ class Command(BaseCommand):
         _option('baselayers', 'Configure baselayers'),
         _option('watersystem', 'Configure watersystem layers'),
         _option('trackrecords', 'Configure trackrecord layers'),
+        _option('minimap', 'Configure minimap layers'),
     )
 
     @transaction.commit_on_success
@@ -42,3 +46,5 @@ class Command(BaseCommand):
             workspace_update_watersystem(loglevel=10)
         if options.get('trackrecords'):
             workspace_update_trackrecords(loglevel=10)
+        if options.get('minimap'):
+            workspace_update_minimap(loglevel=10)

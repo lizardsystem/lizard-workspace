@@ -851,3 +851,36 @@ def workspace_update_trackrecords(username=None, taskname=None, loglevel=20):
     logger.removeHandler(handler)
 
     return 'OK'
+
+
+@task
+def workspace_update_minimap(username=None, taskname=None, loglevel=20):
+    """
+    Add an area layer with a special style.
+    """
+    # Set up logging
+    handler = get_handler(username=username, taskname=taskname)
+    logger.addHandler(handler)
+    logger.setLevel(loglevel)
+
+    # Actual code to do the task
+    MINIMAP_LAYER_SLUG = 'red-on-gray'
+
+    try:
+        Layer.objects.get(slug=MINIMAP_LAYER_SLUG).delete()
+        logger.info('Removing old minimap layer.')
+    except Layer.DoesNotExist:
+        pass
+
+    logger.info('Creating new minimap layer')
+    layer = Layer.objects.get(slug='witte-waas-gebieden')
+    layer.pk = None
+    layer.request_params = simplejson.dumps(dict(styles='vss_red_on_gray'))
+    layer.name = 'Minimap'
+    layer.slug = MINIMAP_LAYER_SLUG
+    layer.save()
+
+    # Remove logging handler
+    logger.removeHandler(handler)
+
+    return 'OK'
