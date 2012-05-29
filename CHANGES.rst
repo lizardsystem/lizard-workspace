@@ -7,6 +7,10 @@ Changelog of lizard-workspace
 
 - Add task and management command to sync track record layers.
 
+- Add task and extend workspace_update command to put track record layers
+  in the right spot.
+
+
 
 0.12 (2012-05-24)
 -----------------

@@ -817,3 +817,37 @@ def workspace_update_watersystem(username=None, taskname=None, loglevel=20):
     logger.removeHandler(handler)
 
     return 'OK'
+
+
+@task
+def workspace_update_trackrecords(username=None, taskname=None, loglevel=20):
+    """
+    Create or replace trackrecordslayers in correct workspace
+    """
+    # Set up logging
+    handler = get_handler(username=username, taskname=taskname)
+    logger.addHandler(handler)
+    logger.setLevel(loglevel)
+
+    # Actual code to do the task
+    layerworkspace = LayerWorkspace.objects.get(slug='p_map')
+    layerworkspace.layers.clear()
+    LayerWorkspaceItem.objects.create(
+        layer_workspace=layerworkspace,
+        layer=Layer.objects.get(slug='p-totaal-in-bodem'),
+    )
+
+    logger.info('Replaced P-layer')
+
+    layerworkspace = LayerWorkspace.objects.get(slug='po4_map')
+    layerworkspace.layers.clear()
+    LayerWorkspaceItem.objects.create(
+        layer_workspace=layerworkspace,
+        layer=Layer.objects.get(slug='po4-in-bodemvocht'),
+    )
+    logger.info('Replaced PO4-layer')
+
+    # Remove logging handler
+    logger.removeHandler(handler)
+
+    return 'OK'

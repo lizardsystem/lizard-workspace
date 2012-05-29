@@ -6,6 +6,7 @@ from django.db import transaction
 
 from lizard_workspace.tasks import workspace_update_baselayers
 from lizard_workspace.tasks import workspace_update_watersystem
+from lizard_workspace.tasks import workspace_update_trackrecords
 
 import optparse
 
@@ -30,6 +31,7 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         _option('baselayers', 'Configure baselayers'),
         _option('watersystem', 'Configure watersystem layers'),
+        _option('trackrecords', 'Configure trackrecord layers'),
     )
 
     @transaction.commit_on_success
@@ -38,3 +40,5 @@ class Command(BaseCommand):
             workspace_update_baselayers(loglevel=10)
         if options.get('watersystem'):
             workspace_update_watersystem(loglevel=10)
+        if options.get('trackrecords'):
+            workspace_update_trackrecords(loglevel=10)
