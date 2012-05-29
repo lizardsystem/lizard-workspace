@@ -2,8 +2,8 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.14 (unreleased)
------------------
+0.13.1 (2012-05-29)
+-------------------
 
 - Add task and extend workspace_update command to configure a minimap layer
 
