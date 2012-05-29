@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.13 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Add task and management command to sync track record layers.
 
 
 0.12 (2012-05-24)

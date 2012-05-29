@@ -11,6 +11,7 @@ from lizard_task.handler import get_handler
 from lizard_workspace.models import Layer
 from lizard_workspace.models import Tag
 from lizard_fewsnorm.models import TimeSeriesCache
+from lizard_fewsnorm.models import ParameterCache
 from lizard_workspace.models import SyncTask
 from lizard_layers.models import ServerMapping
 from lizard_workspace.models import LayerWorkspaceItem
@@ -330,6 +331,101 @@ def sync_layers_measure(
 
     return 'OK'
 
+
+@task
+def sync_layers_track(
+    slug='vss_track_records', username=None, taskname=None, loglevel=20):
+    """
+    Sync layers for track records.
+    """
+
+    # Set up logging
+    handler = get_handler(username=username, taskname=taskname)
+    logger.addHandler(handler)
+    logger.setLevel(loglevel)
+
+    # Actual code to do the task
+    source_ident = 'lizard-layers::%s' % slug
+    layer = Layer.objects.get(slug=slug)
+    original_tags = layer.tags.all()
+    logger.info('template: %s' % layer)
+
+    tag, _ = Tag.objects.get_or_create(slug=slug)
+    logger.info('tag: %s' % tag)
+
+    logger.debug('Invalidating existing layers...')
+    existing_layers = dict(
+        (l.slug, l) for l in
+        Layer.objects.filter(source_ident=source_ident))
+    for existing_layer in existing_layers.values():
+        # Invalidate first and remove tags
+        existing_layer.valid = False
+        existing_layer.tags.clear()
+        existing_layer.save()
+
+    count_update, count_new = 0, 0
+
+    group_tag = 'track_records'
+    parameter_id_Ptot = ParameterCache.objects.get(ident='Ptot.bodem').id
+    parameter_id_PO4 = ParameterCache.objects.get(ident='PO4.bodem').id
+    name_cql_style = (
+        (
+            'PO4 in bodemvocht',
+            "parameter_id = %s" % parameter_id_PO4,
+            'vss_track_record_PO4',
+        ),
+        (
+            'P-totaal in bodem',
+            "parameter_id = %s" % parameter_id_Ptot,
+            'vss_track_record_Ptot',
+        ),
+    )
+    for name, cql, style in name_cql_style:
+
+        instance_slug = slugify(name)
+        if instance_slug in existing_layers:
+            # Update existing, the old existing tags have been
+            # removed already.
+            new_layer = existing_layers[instance_slug]
+            logger.debug('Update: %s' % instance_slug)
+            new_layer.data_set = layer.data_set
+            count_update += 1
+        else:
+            # New
+            logger.debug('New: %s' % instance_slug)
+            new_layer = deepcopy(layer)
+            new_layer.slug = instance_slug
+            new_layer.id = None
+            count_new += 1
+
+        new_layer.filter = cql
+
+        # Note that the same name can occur multiple times, but
+        # with different mod, qua and/or stp.
+        new_layer.name = name
+        new_layer.source_ident = source_ident
+        new_layer.valid = True
+        new_layer.is_local_server = True
+        new_layer.is_clickable = layer.is_local_server
+        new_layer.js_popup_class = layer.js_popup_class
+        new_layer.request_params = simplejson.dumps(dict(styles=style))
+        new_layer.save()
+
+        new_layer.tags.add(tag)
+        for original_tag in original_tags:
+            new_layer.tags.add(original_tag)
+        group_tag, _ = Tag.objects.get_or_create(
+            slug=group_tag,
+        )
+        new_layer.tags.add(group_tag)
+
+    logger.info('new %d items' % count_new)
+    logger.info('updated %d items' % count_update)
+
+    # Remove logging handler
+    logger.removeHandler(handler)
+
+    return 'OK'
 
 def perform_sync_task(task):
     """
