@@ -5,6 +5,8 @@ Changelog of lizard-workspace
 0.14 (unreleased)
 -----------------
 
+- Updated LayerFolder admin with children in list view.
+
 - Changed admin LayerFolder from filter_horizontal to filter_vertical,
   because there is a "Choose all" button now.
 

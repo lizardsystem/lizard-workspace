@@ -582,6 +582,9 @@ class LayerFolder(AL_Node):
 
         return result
 
+    def children_str(self):
+        return ', '.join([str (c) for c in self.children_set.all()])
+
 
 # class LayerFolderItem(models.Models):
 #     layer = model.ForeignKey(Layer)

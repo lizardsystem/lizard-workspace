@@ -69,8 +69,9 @@ class TagAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'layer_count')
 
 
+
 class LayerFolderAdmin(admin.ModelAdmin):
-    list_display = ['name', 'parent']
+    list_display = ['name', 'parent', 'children_str', ]
     filter_horizontal = ('layers', 'layer_tag', )
     search_fields = ['name']
 
