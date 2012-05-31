@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.14 (unreleased)
+0.14 (2012-05-31)
 -----------------
 
 - Updated LayerFolder admin with children in list view.
