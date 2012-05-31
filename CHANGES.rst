@@ -10,6 +10,8 @@ Changelog of lizard-workspace
 - Changed admin LayerFolder from filter_horizontal to filter_vertical,
   because there is a "Choose all" button now.
 
+- Add commands for aqmad layer configuration.
+
 
 0.13.1 (2012-05-29)
 -------------------

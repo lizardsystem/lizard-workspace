@@ -368,6 +368,9 @@ def sync_layers_track(
     group_tag = 'track_records'
     parameter_id_Ptot = ParameterCache.objects.get(ident='Ptot.bodem').id
     parameter_id_PO4 = ParameterCache.objects.get(ident='PO4.bodem').id
+    parameter_id_aqmad_Ptot = ParameterCache.objects.get(
+        ident='Ptot.z-score.water',
+    ).id
     name_cql_style = (
         (
             'PO4 in bodemvocht',
@@ -379,6 +382,12 @@ def sync_layers_track(
             "parameter_id = %s" % parameter_id_Ptot,
             'vss_track_record_Ptot',
         ),
+        (
+            'AqMaD water Ptot',
+            "parameter_id = %s" % parameter_id_aqmad_Ptot,
+            'vss_aqmad_Ptot',
+        ),
+
     )
     for name, cql, style in name_cql_style:
 
@@ -846,6 +855,14 @@ def workspace_update_trackrecords(username=None, taskname=None, loglevel=20):
         layer=Layer.objects.get(slug='po4-in-bodemvocht'),
     )
     logger.info('Replaced PO4-layer')
+
+    layerworkspace = LayerWorkspace.objects.get(slug='aqmad_map')
+    layerworkspace.layers.clear()
+    LayerWorkspaceItem.objects.create(
+        layer_workspace=layerworkspace,
+        layer=Layer.objects.get(slug='aqmad-water-ptot'),
+    )
+    logger.info('Replaced adqmad PO4-layer')
 
     # Remove logging handler
     logger.removeHandler(handler)
