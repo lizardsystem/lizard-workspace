@@ -71,7 +71,7 @@ class TagAdmin(admin.ModelAdmin):
 
 class LayerFolderAdmin(admin.ModelAdmin):
     list_display = ['name', 'parent']
-    filter_vertical = ('layers','layer_tag',)
+    filter_horizontal = ('layers', 'layer_tag', )
     search_fields = ['name']
 
 class SyncTaskAdmin(admin.ModelAdmin):
