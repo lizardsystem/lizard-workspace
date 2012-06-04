@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.15 (unreleased)
+0.15 (2012-06-04)
 -----------------
 
 - Added measure layers to sync_layers.
