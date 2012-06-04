@@ -232,6 +232,9 @@ class Layer(models.Model):
 
     objects = FilteredManager()
 
+    class Meta:
+        ordering = ('name', )
+
     def __unicode__(self):
         return '%s' % self.name
 

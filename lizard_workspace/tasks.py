@@ -26,7 +26,7 @@ logger = logging.getLogger(LOGGER_NAME)
 def sync_layers_ekr(
     slug='vss_area_value', username=None, taskname=None, loglevel=20):
     """
-    Actually: sync_layers for ekr and esf.
+    Actually: sync_layers for ekr, esf and measures.
     """
 
     # Set up logging
@@ -57,6 +57,7 @@ def sync_layers_ekr(
 
     group_tag_ekr = 'ekr-layers'
     group_tag_esf = 'esf-layers'
+    group_tag_measure_status = 'measure-status-layers'
     name_cql_style = (
         ('EKR VIS', "name = 'EKR-VIS'", 'vss_ekr_value', group_tag_ekr),
         ('EKR FYTOPL', "name = 'EKR-FYTOPL'", 'vss_ekr_value', group_tag_ekr),
@@ -74,6 +75,10 @@ def sync_layers_ekr(
         ('ESF 8', "name = 'ESF-8'", 'vss_esf', group_tag_esf),
         ('ESF 9', "name = 'ESF-9'", 'vss_esf', group_tag_esf),
         ('ESF STATUS', "name = 'ESF-STATUS'", 'vss_esf', group_tag_esf),
+        ('Maatregel status', "name = 'MEASURE-STATUS'", 'vss_measure_status',
+         group_tag_measure_status),
+        ('Maatregel status planning', "name = 'MEASURE-STATUS-PLANNING'", 'vss_measure_status',
+         group_tag_measure_status),
     )
     for name, cql, style, group_tag in name_cql_style:
 
