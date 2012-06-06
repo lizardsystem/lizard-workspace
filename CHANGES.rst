@@ -2,8 +2,8 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.16 (unreleased)
------------------
+0.15.1 (2012-06-06)
+-------------------
 
 - Add option --all to workspace-update management command
 
