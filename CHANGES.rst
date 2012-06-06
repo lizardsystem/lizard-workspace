@@ -5,7 +5,8 @@ Changelog of lizard-workspace
 0.15.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Modified workspace_update --minimap to create two layerworkspaces:
+  One for areas and one for krw-waterbodies.
 
 
 0.15.1 (2012-06-06)

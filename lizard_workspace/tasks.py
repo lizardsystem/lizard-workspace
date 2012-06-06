@@ -875,6 +875,68 @@ def workspace_update_trackrecords(username=None, taskname=None, loglevel=20):
     return 'OK'
 
 
+def _create_single_layer_workspace(
+        layerworkspace_template_slug,
+        layerworkspace_slug,
+        layerworkspace_name,
+        layer_template_slug,
+        layer_style,
+        layer_slug,
+        layer_name,
+    ):
+    """
+    Create or replace new layer and layerworkspace based on template objects.
+    """
+    logger.info('Deleting any layer with slug %s', layer_slug)
+    Layer.objects.filter(slug=layer_slug).delete()
+
+    logger.info(
+        'Creating new layer %s with style %s based on layer with slug %s',
+        layer_name,
+        layer_style,
+        layer_slug,
+    )
+    layer = Layer.objects.get(slug=layer_template_slug)
+    layer.pk = None
+    layer.request_params = simplejson.dumps(dict(styles=layer_style))
+    layer.name = layer_name
+    layer.slug = layer_slug
+    layer.save()
+
+
+    logger.info(
+        'Deleting any layerworkspace with slug %s',
+        layerworkspace_slug,
+    )
+    LayerWorkspace.objects.filter(
+        slug=layerworkspace_slug,
+    ).delete()
+
+    logger.info(
+        'Creating new layerworkspace %s based on layerworkspace with slug %s',
+        layerworkspace_name,
+        layerworkspace_slug,
+    )
+    layerworkspace = LayerWorkspace.objects.get(slug=layerworkspace_template_slug)
+    layerworkspace.pk = None
+    layerworkspace.id = None
+    layerworkspace.save()
+    layerworkspace.slug = layerworkspace_slug
+    layerworkspace.name = layerworkspace_name
+    layerworkspace.save()
+
+    logger.info(
+        'Adding new layer %s to new layerworkspace %s',
+        layer,
+        layerworkspace,
+    )
+        
+    LayerWorkspaceItem.objects.create(
+        layer_workspace=layerworkspace,
+        layer=layer,
+    )
+
+
 @task
 def workspace_update_minimap(username=None, taskname=None, loglevel=20):
     """
@@ -886,42 +948,31 @@ def workspace_update_minimap(username=None, taskname=None, loglevel=20):
     logger.setLevel(loglevel)
 
     # Actual code to do the task
-    MINIMAP_LAYER_SLUG = 'red-on-gray'
-    MINIMAP_LAYERWORKSPACE_SLUG = 'minimap'
+    MINIMAP_LAYER_SLUG_KRW = 'minimap-krw'
+    MINIMAP_LAYERWORKSPACE_SLUG_KRW = 'minimap-krw'
+    MINIMAP_LAYER_SLUG_AREA = 'minimap-area'
+    MINIMAP_LAYERWORKSPACE_SLUG_AREA = 'minimap-area'
 
-    try:
-        Layer.objects.get(slug=MINIMAP_LAYER_SLUG).delete()
-        logger.info('Removing old minimap layer.')
-    except Layer.DoesNotExist:
-        pass
+    # For krw minimap
+    _create_single_layer_workspace(
+        layerworkspace_template_slug='watersysteemkaart',
+        layerworkspace_slug=MINIMAP_LAYERWORKSPACE_SLUG_KRW,
+        layerworkspace_name='MiniMap KRW',
+        layer_template_slug='krw_waterlichaam',
+        layer_style='vss_red_on_gray',
+        layer_slug=MINIMAP_LAYER_SLUG_KRW,
+        layer_name='MiniMap KRW',
+    )
 
-    logger.info('Creating new minimap layer')
-    layer = Layer.objects.get(slug='witte-waas-gebieden')
-    layer.pk = None
-    layer.request_params = simplejson.dumps(dict(styles='vss_red_on_gray'))
-    layer.name = 'Minimap'
-    layer.slug = MINIMAP_LAYER_SLUG
-    layer.save()
-
-    try:
-        LayerWorkspace.objects.get(slug=MINIMAP_LAYERWORKSPACE_SLUG).delete()
-        logger.info('Removing old minimap layer')
-    except LayerWorkspace.DoesNotExist:
-        pass
-
-    logger.info('Creating new minimap layerworkspace')
-    layerworkspace = LayerWorkspace.objects.get(slug='watersysteemkaart')
-    layerworkspace.pk = None
-    layerworkspace.id = None
-    layerworkspace.save()
-    layerworkspace.slug = MINIMAP_LAYERWORKSPACE_SLUG
-    layerworkspace.name = 'Mini Map'
-    layerworkspace.save()
-
-    logger.info('Adding minimap layer to minimap layerworkspace')
-    LayerWorkspaceItem.objects.create(
-        layer_workspace=layerworkspace,
-        layer=layer,
+    # For area minimap
+    _create_single_layer_workspace(
+        layerworkspace_template_slug='watersysteemkaart',
+        layerworkspace_slug=MINIMAP_LAYERWORKSPACE_SLUG_AREA,
+        layerworkspace_name='MiniMap gebieden',
+        layer_template_slug='witte-waas-gebieden',
+        layer_style='vss_red_on_gray',
+        layer_slug=MINIMAP_LAYER_SLUG_AREA,
+        layer_name='MiniMap gebieden',
     )
 
     # Remove logging handler
