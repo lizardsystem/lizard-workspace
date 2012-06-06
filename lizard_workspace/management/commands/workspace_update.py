@@ -36,15 +36,16 @@ class Command(BaseCommand):
         _option('watersystem', 'Configure watersystem layers'),
         _option('trackrecords', 'Configure trackrecord layers'),
         _option('minimap', 'Configure minimap layers'),
+        _option('all', 'All of the above options in one command'),
     )
 
     @transaction.commit_on_success
     def handle(self, *args, **options):
-        if options.get('baselayers'):
+        if options.get('baselayers') or options.get('all'):
             workspace_update_baselayers(loglevel=10)
-        if options.get('watersystem'):
+        if options.get('watersystem') or options.get('all'):
             workspace_update_watersystem(loglevel=10)
-        if options.get('trackrecords'):
+        if options.get('trackrecords') or options.get('all'):
             workspace_update_trackrecords(loglevel=10)
-        if options.get('minimap'):
+        if options.get('minimap') or options.get('all'):
             workspace_update_minimap(loglevel=10)

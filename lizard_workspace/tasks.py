@@ -887,6 +887,7 @@ def workspace_update_minimap(username=None, taskname=None, loglevel=20):
 
     # Actual code to do the task
     MINIMAP_LAYER_SLUG = 'red-on-gray'
+    MINIMAP_LAYERWORKSPACE_SLUG = 'minimap'
 
     try:
         Layer.objects.get(slug=MINIMAP_LAYER_SLUG).delete()
@@ -901,6 +902,27 @@ def workspace_update_minimap(username=None, taskname=None, loglevel=20):
     layer.name = 'Minimap'
     layer.slug = MINIMAP_LAYER_SLUG
     layer.save()
+
+    try:
+        LayerWorkspace.objects.get(slug=MINIMAP_LAYERWORKSPACE_SLUG).delete()
+        logger.info('Removing old minimap layer')
+    except LayerWorkspace.DoesNotExist:
+        pass
+
+    logger.info('Creating new minimap layerworkspace')
+    layerworkspace = LayerWorkspace.objects.get(slug='watersysteemkaart')
+    layerworkspace.pk = None
+    layerworkspace.id = None
+    layerworkspace.save()
+    layerworkspace.slug = MINIMAP_LAYERWORKSPACE_SLUG
+    layerworkspace.name = 'Mini Map'
+    layerworkspace.save()
+
+    logger.info('Adding minimap layer to minimap layerworkspace')
+    LayerWorkspaceItem.objects.create(
+        layer_workspace=layerworkspace,
+        layer=layer,
+    )
 
     # Remove logging handler
     logger.removeHandler(handler)

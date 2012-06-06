@@ -5,7 +5,10 @@ Changelog of lizard-workspace
 0.16 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Add option --all to workspace-update management command
+
+- Have workspace_update --minimap create the appropriate 
+  layerworkspace as well.
 
 
 0.15 (2012-06-04)
