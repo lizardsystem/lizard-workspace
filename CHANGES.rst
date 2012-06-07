@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.15.3 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Add mask layer to the esf popup layerworkspaces.
 
 
 0.15.2 (2012-06-07)

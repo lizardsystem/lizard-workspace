@@ -850,6 +850,10 @@ def workspace_update_trackrecords(username=None, taskname=None, loglevel=20):
         layer_workspace=layerworkspace,
         layer=Layer.objects.get(slug='p-totaal-in-bodem'),
     )
+    LayerWorkspaceItem.objects.create(
+        layer_workspace=layerworkspace,
+        layer=Layer.objects.get(slug='witte-waas-gebieden'),
+    )
 
     logger.info('Replaced P-layer')
 
@@ -859,6 +863,10 @@ def workspace_update_trackrecords(username=None, taskname=None, loglevel=20):
         layer_workspace=layerworkspace,
         layer=Layer.objects.get(slug='po4-in-bodemvocht'),
     )
+    LayerWorkspaceItem.objects.create(
+        layer_workspace=layerworkspace,
+        layer=Layer.objects.get(slug='witte-waas-gebieden'),
+    )
     logger.info('Replaced PO4-layer')
 
     layerworkspace = LayerWorkspace.objects.get(slug='aqmad_map')
@@ -866,6 +874,10 @@ def workspace_update_trackrecords(username=None, taskname=None, loglevel=20):
     LayerWorkspaceItem.objects.create(
         layer_workspace=layerworkspace,
         layer=Layer.objects.get(slug='aqmad-water-ptot'),
+    )
+    LayerWorkspaceItem.objects.create(
+        layer_workspace=layerworkspace,
+        layer=Layer.objects.get(slug='witte-waas-gebieden'),
     )
     logger.info('Replaced adqmad PO4-layer')
 
