@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.15.2 (unreleased)
+0.15.2 (2012-06-07)
 -------------------
 
 - Modified workspace_update --minimap to create two layerworkspaces:
