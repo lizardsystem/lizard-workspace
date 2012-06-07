@@ -782,8 +782,8 @@ def workspace_update_watersystem(username=None, taskname=None, loglevel=20):
         name='KRW-waterlichaam',
         tag=tag,
         layers=[
-            'vss:krw_waterbody_polygon',
-            'vss:krw_waterbody_linestring',
+            'vss:vss_krw_waterbody_polygon',
+            'vss:vss_krw_waterbody_linestring',
         ],
     )
     LayerWorkspaceItem.objects.create(
@@ -959,7 +959,7 @@ def workspace_update_minimap(username=None, taskname=None, loglevel=20):
         layerworkspace_slug=MINIMAP_LAYERWORKSPACE_SLUG_KRW,
         layerworkspace_name='MiniMap KRW',
         layer_template_slug='krw_waterlichaam',
-        layer_style='vss_red_on_gray',
+        layer_style='vss_red_on_gray_line,vss_red_on_gray',
         layer_slug=MINIMAP_LAYER_SLUG_KRW,
         layer_name='MiniMap KRW',
     )

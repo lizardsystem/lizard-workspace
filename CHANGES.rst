@@ -8,6 +8,8 @@ Changelog of lizard-workspace
 - Modified workspace_update --minimap to create two layerworkspaces:
   One for areas and one for krw-waterbodies.
 
+- Fix error in watersystem layer using deprecated geoserver layer.
+
 
 0.15.1 (2012-06-06)
 -------------------
