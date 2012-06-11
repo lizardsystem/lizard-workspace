@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.15.4 (unreleased)
+0.15.4 (2012-06-11)
 -------------------
 
 - Update workspace_update to add location_filter to krwminimap layer.
