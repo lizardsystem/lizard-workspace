@@ -895,6 +895,7 @@ def _create_single_layer_workspace(
         layer_style,
         layer_slug,
         layer_name,
+        defaults={},
     ):
     """
     Create or replace new layer and layerworkspace based on template objects.
@@ -913,6 +914,8 @@ def _create_single_layer_workspace(
     layer.request_params = simplejson.dumps(dict(styles=layer_style))
     layer.name = layer_name
     layer.slug = layer_slug
+    for k, v in defaults.items():
+        setattr(layer, k, v)
     layer.save()
 
 
@@ -974,6 +977,12 @@ def workspace_update_minimap(username=None, taskname=None, loglevel=20):
         layer_style='vss_red_on_gray_line,vss_red_on_gray',
         layer_slug=MINIMAP_LAYER_SLUG_KRW,
         layer_name='MiniMap KRW',
+        defaults={
+            'use_location_filter': True,
+            'location_filter': {'key': 'env', 'tpl': 'ident:{id}'},
+            'is_local_server': True,
+            'source_ident': 'workspace-update-command',
+        }
     )
 
     # For area minimap
