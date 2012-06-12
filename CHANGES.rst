@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.16 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Added collage view (work in progress).
 
 
 0.15 (2012-06-04)
