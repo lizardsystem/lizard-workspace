@@ -4,7 +4,7 @@ import logging
 
 from django.db import models
 from django.contrib.auth.models import User
-#from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse
 
 from lizard_security.manager import FilteredManager
 from lizard_security.models import DataSet
@@ -500,11 +500,69 @@ class LayerCollageItem(models.Model):
         max_length=200, null=True, blank=True,
         help_text='same grouping hints are grouped together in a popup')
 
+    # settings for statistics
+
+    SUMMER_WINTER_CHOICES = (
+        (1, 'Hele jaar'),
+        (2, 'Alleen zomer (1 april - 1 oktober)'),
+        (3, 'Alleen winter (1 oktober - 1 april)'))
+    DAY_NIGHT_CHOICES = (
+        (1, 'Hele dag'),
+        (2, 'Alleen dag (6:00-0:00)'),
+        (3, 'Alleen nacht (0:00-6:00)'))
+
+    # Boundary value for statistics.
+    boundary_value = models.FloatField(blank=True, null=True)
+    # Percentile value for statistics (blank = median).
+    percentile_value = models.FloatField(blank=True, null=True)
+
+    summer_or_winter = models.IntegerField(
+        choices=SUMMER_WINTER_CHOICES, default=1)
+    # Restrict_to_month is used to filter the data.
+    restrict_to_month = models.IntegerField(blank=True, null=True)
+    day_of_week = models.IntegerField(
+        blank=True, null=True, help_text='blank=all, 1=monday, 2=tuesday, etc')
+    day_or_night = models.IntegerField(
+        choices=DAY_NIGHT_CHOICES, default=1)
+
     class Meta:
         ordering = ('grouping_hint', 'name', )
 
     def __unicode__(self):
         return '%s %s' % (self.layer_collage, self.layer)
+
+    def graph_url(self):
+        """Return url of graph or None
+
+        Look at identifier and decide if the item has a graph.
+
+        Example of good ident:
+        {"geo_ident":"511004","par_ident":"Cl","stp_ident":"NETS",
+         "mod_ident":"Import_Reeksen","qua_ident":null,"fews_norm_source_slug":"hhnk"}
+        """
+        if not self.identifier:
+            return None
+
+        identifier = json.loads(self.identifier)
+        if not 'geo_ident' in identifier:
+            return None
+
+        base_url = reverse('lizard_graph_graph_view')
+
+        line_item = {
+            "fews_norm_source_slug": identifier['fews_norm_source_slug'],
+            "location": identifier['geo_ident'],
+            "parameter": identifier['par_ident'],
+            "type": "line",
+            }
+
+        parameters = []
+        parameters.append('dt_start=2005-02-11%2000:00:00')
+        parameters.append('dt_end=2012-06-11%2000:00:00')
+        parameters.append('item=%s' % json.dumps(line_item).replace('"', '%22'))
+        parameters.append('legend-location=7')
+        return base_url + '?' + '&'.join(parameters)
+
 
 
 class LayerFolder(AL_Node):

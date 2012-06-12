@@ -1,0 +1,40 @@
+{% extends "lizard_ui/lizardbase.html" %}
+
+{% comment %}
+Collage screen with statistics for LayerCollage objects.
+{% endcomment %}
+
+{% block logo %}
+{% endblock %}
+
+{% block sidebar %}
+{{ view.collage }}
+<ul>
+{% for collage_item in view.collage.layercollageitem_set.all %}
+<li>{{ collage_item.name }}</li>
+{% endfor %}
+</ul>
+{% endblock %}
+
+{% block secondary-sidebar %}
+{% endblock %}
+
+{% block content %}
+<div style="overflow-y: auto; height: 100%;"> {% comment %}Make it scrollable.{% endcomment %}
+Collage content
+
+{% for collage_item in view.collage.layercollageitem_set.all %}
+  {% if collage_item.graph_url %}
+  <div>
+    {{ collage_item.name }}
+  </div>
+  <div style="height: 200px; width: 100%;"
+       class="img-use-my-width img-use-my-size">
+    <a href="{{ collage_item.graph_url }}" class="replace-with-image">Graph</a>
+  </div>
+  {% endif %}
+{% endfor %}
+</div>
+
+<script type="text/javascript">var scrollbarWidth = function() {return 0;}</script>
+{% endblock %}
