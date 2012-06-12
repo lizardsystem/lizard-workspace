@@ -782,8 +782,8 @@ def workspace_update_watersystem(username=None, taskname=None, loglevel=20):
         name='KRW-waterlichaam',
         tag=tag,
         layers=[
-            'vss:krw_waterbody_polygon',
-            'vss:krw_waterbody_linestring',
+            'vss:vss_krw_waterbody_polygon',
+            'vss:vss_krw_waterbody_linestring',
         ],
     )
     LayerWorkspaceItem.objects.create(
@@ -850,6 +850,10 @@ def workspace_update_trackrecords(username=None, taskname=None, loglevel=20):
         layer_workspace=layerworkspace,
         layer=Layer.objects.get(slug='p-totaal-in-bodem'),
     )
+    LayerWorkspaceItem.objects.create(
+        layer_workspace=layerworkspace,
+        layer=Layer.objects.get(slug='witte-waas-gebieden'),
+    )
 
     logger.info('Replaced P-layer')
 
@@ -859,6 +863,10 @@ def workspace_update_trackrecords(username=None, taskname=None, loglevel=20):
         layer_workspace=layerworkspace,
         layer=Layer.objects.get(slug='po4-in-bodemvocht'),
     )
+    LayerWorkspaceItem.objects.create(
+        layer_workspace=layerworkspace,
+        layer=Layer.objects.get(slug='witte-waas-gebieden'),
+    )
     logger.info('Replaced PO4-layer')
 
     layerworkspace = LayerWorkspace.objects.get(slug='aqmad_map')
@@ -867,12 +875,81 @@ def workspace_update_trackrecords(username=None, taskname=None, loglevel=20):
         layer_workspace=layerworkspace,
         layer=Layer.objects.get(slug='aqmad-water-ptot'),
     )
+    LayerWorkspaceItem.objects.create(
+        layer_workspace=layerworkspace,
+        layer=Layer.objects.get(slug='witte-waas-gebieden'),
+    )
     logger.info('Replaced adqmad PO4-layer')
 
     # Remove logging handler
     logger.removeHandler(handler)
 
     return 'OK'
+
+
+def _create_single_layer_workspace(
+        layerworkspace_template_slug,
+        layerworkspace_slug,
+        layerworkspace_name,
+        layer_template_slug,
+        layer_style,
+        layer_slug,
+        layer_name,
+        defaults={},
+    ):
+    """
+    Create or replace new layer and layerworkspace based on template objects.
+    """
+    logger.info('Deleting any layer with slug %s', layer_slug)
+    Layer.objects.filter(slug=layer_slug).delete()
+
+    logger.info(
+        'Creating new layer %s with style %s based on layer with slug %s',
+        layer_name,
+        layer_style,
+        layer_slug,
+    )
+    layer = Layer.objects.get(slug=layer_template_slug)
+    layer.pk = None
+    layer.request_params = simplejson.dumps(dict(styles=layer_style))
+    layer.name = layer_name
+    layer.slug = layer_slug
+    for k, v in defaults.items():
+        setattr(layer, k, v)
+    layer.save()
+
+
+    logger.info(
+        'Deleting any layerworkspace with slug %s',
+        layerworkspace_slug,
+    )
+    LayerWorkspace.objects.filter(
+        slug=layerworkspace_slug,
+    ).delete()
+
+    logger.info(
+        'Creating new layerworkspace %s based on layerworkspace with slug %s',
+        layerworkspace_name,
+        layerworkspace_slug,
+    )
+    layerworkspace = LayerWorkspace.objects.get(slug=layerworkspace_template_slug)
+    layerworkspace.pk = None
+    layerworkspace.id = None
+    layerworkspace.save()
+    layerworkspace.slug = layerworkspace_slug
+    layerworkspace.name = layerworkspace_name
+    layerworkspace.save()
+
+    logger.info(
+        'Adding new layer %s to new layerworkspace %s',
+        layer,
+        layerworkspace,
+    )
+        
+    LayerWorkspaceItem.objects.create(
+        layer_workspace=layerworkspace,
+        layer=layer,
+    )
 
 
 @task
@@ -886,21 +963,38 @@ def workspace_update_minimap(username=None, taskname=None, loglevel=20):
     logger.setLevel(loglevel)
 
     # Actual code to do the task
-    MINIMAP_LAYER_SLUG = 'red-on-gray'
+    MINIMAP_LAYER_SLUG_KRW = 'minimap-krw'
+    MINIMAP_LAYERWORKSPACE_SLUG_KRW = 'minimap-krw'
+    MINIMAP_LAYER_SLUG_AREA = 'minimap-area'
+    MINIMAP_LAYERWORKSPACE_SLUG_AREA = 'minimap-area'
 
-    try:
-        Layer.objects.get(slug=MINIMAP_LAYER_SLUG).delete()
-        logger.info('Removing old minimap layer.')
-    except Layer.DoesNotExist:
-        pass
+    # For krw minimap
+    _create_single_layer_workspace(
+        layerworkspace_template_slug='watersysteemkaart',
+        layerworkspace_slug=MINIMAP_LAYERWORKSPACE_SLUG_KRW,
+        layerworkspace_name='MiniMap KRW',
+        layer_template_slug='krw_waterlichaam',
+        layer_style='vss_red_on_gray_line,vss_red_on_gray',
+        layer_slug=MINIMAP_LAYER_SLUG_KRW,
+        layer_name='MiniMap KRW',
+        defaults={
+            'use_location_filter': True,
+            'location_filter': {'key': 'env', 'tpl': 'ident:{id}'},
+            'is_local_server': True,
+            'source_ident': 'workspace-update-command',
+        }
+    )
 
-    logger.info('Creating new minimap layer')
-    layer = Layer.objects.get(slug='witte-waas-gebieden')
-    layer.pk = None
-    layer.request_params = simplejson.dumps(dict(styles='vss_red_on_gray'))
-    layer.name = 'Minimap'
-    layer.slug = MINIMAP_LAYER_SLUG
-    layer.save()
+    # For area minimap
+    _create_single_layer_workspace(
+        layerworkspace_template_slug='watersysteemkaart',
+        layerworkspace_slug=MINIMAP_LAYERWORKSPACE_SLUG_AREA,
+        layerworkspace_name='MiniMap gebieden',
+        layer_template_slug='witte-waas-gebieden',
+        layer_style='vss_red_on_gray',
+        layer_slug=MINIMAP_LAYER_SLUG_AREA,
+        layer_name='MiniMap gebieden',
+    )
 
     # Remove logging handler
     logger.removeHandler(handler)
