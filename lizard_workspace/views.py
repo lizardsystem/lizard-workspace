@@ -9,6 +9,9 @@ from lizard_workspace.models import LayerCollage
 class CollageView(DateRangeMixin, UiView):
     template_name = 'lizard_workspace/collage.html'
 
+    def title(self):
+        return 'Collage %s' % self.collage().name
+
     def collage(self):
         """Return collage"""
         if not hasattr(self, '_collage'):

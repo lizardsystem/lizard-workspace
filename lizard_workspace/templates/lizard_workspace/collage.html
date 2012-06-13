@@ -1,5 +1,51 @@
 {% extends "lizard_ui/lizardbase.html" %}
 
+{% block css %}
+{{ block.super }}
+        <style type="text/css" media="screen, projection">
+/* Tables */
+table.generic-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table.generic-table,
+table.generic-table th,
+table.generic-table td {
+  border: 1px solid lightgrey;
+}
+
+table.generic-table thead th {
+  background-color: #f5f4f5;
+}
+
+table.generic-table .number {/* Number cells align right. */
+  text-align: right;
+}
+
+table.generic-table .button {/* Cells with some clickable image align in the center. */
+  text-align: center;
+}
+
+th, td, caption {
+  padding: 4px 10px 4px 5px;
+}
+
+body {
+  line-height: 1.5;
+}
+
+div#content {
+  padding: 20px 0px 4px 20px;
+}
+
+div.collage-graph {
+  padding-top: 30px;
+}
+
+</style>
+{% endblock %}
+
 {% comment %}
 Collage screen with statistics for LayerCollage objects.
 {% endcomment %}
@@ -24,7 +70,7 @@ Collage screen with statistics for LayerCollage objects.
 
 <h2>{{ view.collage.name }}</h2>
 
-
+<div>
 <ul>
   {% ifnotequal view.collage.summer_or_winter 1 %}
   <li>
@@ -55,7 +101,9 @@ Collage screen with statistics for LayerCollage objects.
   </li>
   {% endifnotequal %}
 </ul>
+</div>
 
+<div>
 <table class="generic-table">
   <thead>
     <th>Locatie</th>
@@ -78,7 +126,7 @@ Collage screen with statistics for LayerCollage objects.
       <td>{{ stat_row.standard.avg }}</td>
       <td>{{ stat_row.standard.sum }}</td>
       <td>{{ stat_row.boundary.amount_less_equal }} ({% firstof stat_row.boundary.value '-' %})</td>
-      <td>{{ stat_row.boundary.amount_greater }} (% firstof stat_row.boundary.value '-' %)</td>
+      <td>{{ stat_row.boundary.amount_greater }} ({% firstof stat_row.boundary.value '-' %})</td>
       <td>{{ stat_row.percentile.median }}</td>
       <td>{{ stat_row.percentile.90 }}</td>
       <td>{{ stat_row.percentile.user }} ({% firstof stat_row.percentile.value '-' %})</td>
@@ -86,8 +134,10 @@ Collage screen with statistics for LayerCollage objects.
     {% endfor %}
   </tbody>
 </table>
+</div>
 
 {% for collage_item in view.collage.layercollageitem_set.all %}
+<div class="collage-graph">
   {% if collage_item.graph_url %}
   <div>
     {{ collage_item.name }}
@@ -97,7 +147,9 @@ Collage screen with statistics for LayerCollage objects.
     <a href="{{ collage_item.graph_url }}" class="replace-with-image">Graph</a>
   </div>
   {% endif %}
+</div>
 {% endfor %}
+
 </div>
 
 <script type="text/javascript">var scrollbarWidth = function() {return 0;}</script>

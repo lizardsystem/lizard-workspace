@@ -1,10 +1,12 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 import json
 import logging
+import datetime
 
-from django.db import models
 from django.contrib.auth.models import User
+from django.core.cache import cache
 from django.core.urlresolvers import reverse
+from django.db import models
 
 from lizard_security.manager import FilteredManager
 from lizard_security.models import DataSet
@@ -12,6 +14,10 @@ from lizard_security.models import DataSet
 from lizard_map.models import WorkspaceStorage
 from lizard_map.models import ADAPTER_CLASS_WMS
 from treebeard.al_tree import AL_Node
+
+from lizard_fewsnorm.models import Event
+from lizard_fewsnorm.models import FewsNormSource
+from lizard_fewsnorm.models import Series
 
 logger = logging.getLogger(__name__)
 
@@ -564,6 +570,47 @@ class LayerCollageItem(models.Model):
         return base_url + '?' + '&'.join(parameters)
 
     def info_stats(self):
+        """Return statistics on time series
+
+        Only works when collage item is from a fews location
+        """
+        def cached_time_series(identifier, start, end):
+            """
+            Cached time series
+            """
+            def time_series_key(identifier, start, end):
+                return ('ts::%s::%s:%s' % (
+                    str(identifier), start, end)).replace(' ', '_')
+            cache_key = time_series_key(identifier, start, end)
+            ts = cache.get(cache_key)
+            if ts is None:
+                # Actually fetching time series
+                source_name = identifier['fews_norm_source_slug']
+                source = FewsNormSource.objects.get(slug=source_name)
+                params = {}
+                if 'geo_ident' in identifier:
+                    params['location'] = identifier['geo_ident']
+                if 'par_ident' in identifier:
+                    params['parameter'] = identifier['par_ident']
+                if 'mod_ident' in identifier:
+                    params['moduleinstance'] = identifier['mod_ident']
+                if 'stp_ident' in identifier:
+                    params['timestep'] = identifier['stp_ident']
+                if 'qua_ident' in identifier:
+                    params['qualifierset'] = identifier['qua_ident']
+                series = Series.from_raw(
+                    schema_prefix=source.database_schema_name,
+                    params=params).using(source.database_name)
+                print list(series)
+                ts = Event.time_series(source, series, start, end)
+                cache.set(cache_key, ts)
+            return ts
+        identifier = json.loads(self.identifier)
+        start = datetime.datetime(2007, 1, 1)
+        end = datetime.datetime(2012, 1, 1)
+        time_series = cached_time_series(identifier, start, end)
+        print time_series
+
         return {
             'name': self.name,
             'boundary': {
