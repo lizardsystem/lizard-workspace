@@ -19,6 +19,18 @@ class CollageView(DateRangeMixin, UiView):
                 self._collage = None
         return self._collage
 
+    def collage_info(self):
+        """Info for all collage items"""
+        return self.collage().info()
+
+    def collage_stats(self):
+        """Info of individual collage items"""
+        result = []
+        for collage_item in self.collage().layercollageitem_set.all():
+            stats = collage_item.info_stats()
+            result.append(stats)
+        return result
+
     def get(self, request, *args, **kwargs):
         self.collage_id = kwargs.get('collage_id', None)
         return super(CollageView, self).get(request, *args, **kwargs)

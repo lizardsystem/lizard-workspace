@@ -426,6 +426,26 @@ class LayerCollage(LayerContainerMixin):
          null=True, blank=True)
     owner = models.ForeignKey(User, blank=True, null=True)
 
+    # settings for statistics
+    SUMMER_WINTER_CHOICES = (
+        (1, 'Hele jaar'),
+        (2, 'Alleen zomer (1 april - 1 oktober)'),
+        (3, 'Alleen winter (1 oktober - 1 april)'))
+    DAY_NIGHT_CHOICES = (
+        (1, 'Hele dag'),
+        (2, 'Alleen dag (6:00-0:00)'),
+        (3, 'Alleen nacht (0:00-6:00)'))
+
+    # Period
+    summer_or_winter = models.IntegerField(
+        choices=SUMMER_WINTER_CHOICES, default=1)
+    restrict_to_month = models.IntegerField(
+        blank=True, null=True, help_text='1=jan, 2=feb, etc')
+    day_of_week = models.IntegerField(
+        blank=True, null=True, help_text='blank=all, 1=monday, 2=tuesday, etc')
+    day_or_night = models.IntegerField(
+        choices=DAY_NIGHT_CHOICES, default=1)
+
     def __unicode__(self):
         return '%s' % self.name
 
@@ -500,30 +520,10 @@ class LayerCollageItem(models.Model):
         max_length=200, null=True, blank=True,
         help_text='same grouping hints are grouped together in a popup')
 
-    # settings for statistics
-
-    SUMMER_WINTER_CHOICES = (
-        (1, 'Hele jaar'),
-        (2, 'Alleen zomer (1 april - 1 oktober)'),
-        (3, 'Alleen winter (1 oktober - 1 april)'))
-    DAY_NIGHT_CHOICES = (
-        (1, 'Hele dag'),
-        (2, 'Alleen dag (6:00-0:00)'),
-        (3, 'Alleen nacht (0:00-6:00)'))
-
     # Boundary value for statistics.
     boundary_value = models.FloatField(blank=True, null=True)
     # Percentile value for statistics (blank = median).
     percentile_value = models.FloatField(blank=True, null=True)
-
-    summer_or_winter = models.IntegerField(
-        choices=SUMMER_WINTER_CHOICES, default=1)
-    # Restrict_to_month is used to filter the data.
-    restrict_to_month = models.IntegerField(blank=True, null=True)
-    day_of_week = models.IntegerField(
-        blank=True, null=True, help_text='blank=all, 1=monday, 2=tuesday, etc')
-    day_or_night = models.IntegerField(
-        choices=DAY_NIGHT_CHOICES, default=1)
 
     class Meta:
         ordering = ('grouping_hint', 'name', )
@@ -563,6 +563,24 @@ class LayerCollageItem(models.Model):
         parameters.append('legend-location=7')
         return base_url + '?' + '&'.join(parameters)
 
+    def info_stats(self):
+        return {
+            'name': self.name,
+            'boundary': {
+                'amount_less_equal': 666,
+                'amount_greater': 123,
+                'value': self.boundary_value},
+            'standard': {
+                'min': 12,
+                'max': 32,
+                'avg': 20,
+                'sum': 100},
+            'percentile': {
+                'value': self.percentile_value,
+                'user': 20,
+                'median': 40,
+                '90': 60}
+            }
 
 
 class LayerFolder(AL_Node):
