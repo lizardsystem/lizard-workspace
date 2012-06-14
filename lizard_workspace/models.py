@@ -1,7 +1,6 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 import json
 import logging
-import datetime
 
 from django.contrib.auth.models import User
 from django.core.cache import cache
@@ -569,13 +568,11 @@ class LayerCollageItem(models.Model):
             }
 
         parameters = []
-        parameters.append('dt_start=2005-02-11%2000:00:00')
-        parameters.append('dt_end=2012-06-11%2000:00:00')
         parameters.append('item=%s' % json.dumps(line_item).replace('"', '%22'))
         parameters.append('legend-location=7')
         return base_url + '?' + '&'.join(parameters)
 
-    def info_stats(self):
+    def info_stats(self, start, end):
         """Return statistics on time series
 
         Only works when collage item is from a fews location
@@ -588,8 +585,9 @@ class LayerCollageItem(models.Model):
                 return ('ts::%s::%s:%s' % (
                     str(identifier), start, end)).replace(' ', '_')
             cache_key = time_series_key(identifier, start, end)
-            ts = cache.get(cache_key)
-            if ts is None:
+            print cache_key
+            #ts = cache.get(cache_key)
+            if 1:  # ts is None:
                 # Actually fetching time series
                 source_name = identifier['fews_norm_source_slug']
                 source = FewsNormSource.objects.get(slug=source_name)
@@ -608,7 +606,7 @@ class LayerCollageItem(models.Model):
                     schema_prefix=source.database_schema_name,
                     params=params).using(source.database_name)
                 ts = Event.time_series(source, series, start, end)
-                cache.set(cache_key, ts)
+                #cache.set(cache_key, ts)
             return ts
 
         def filter_ts_period(ts):
@@ -646,10 +644,25 @@ class LayerCollageItem(models.Model):
                         boundary_result['amount_greater'] += 1
                 result['boundary'] = boundary_result
 
+            # Remember: (datetime, (value, flag, comment))
+            items = ts.get_events(start_date=start, end_date=end)
+            result['item_count'] = len(items)
+
+            # Calc min, max, avg, sum
+            if items:
+                # reduce: see the docs of reduce :-) We also want the date/times of the min/max.
+                items_sum = sum([i[1][0] for i in items])
+                standard_result = {
+                    'min': reduce(lambda a, b: a if a[1][0] <= b[1][0] else b, items),
+                    'max': reduce(lambda a, b: a if a[1][0] >= b[1][0] else b, items),
+                    'sum': items_sum,
+                    'avg': float(items_sum) / len(items),
+                    }
+                result['standard'] = standard_result
+
             # Calc percentiles
-            # Remember: datetime, (value, flag, comment)
             sorted_items = sorted(
-                ts.get_events(start_date=start, end_date=end),
+                items,
                 key=lambda i: i[1][0])
             if sorted_items:
                 percentile_result = {
@@ -666,17 +679,17 @@ class LayerCollageItem(models.Model):
                     pass
                 result['percentile'] = percentile_result
 
+
             return result
 
         identifier = json.loads(self.identifier)
-        start = datetime.datetime(2007, 1, 1)
-        end = datetime.datetime(2012, 1, 1)
 
         # Time series is a dict.
         time_series = cached_time_series(identifier, start, end)
 
         result = {
             'name': self.name,
+            'item_count': None,
             'boundary': {
                 'amount_less_equal': None,
                 'amount_greater': None,
@@ -697,19 +710,12 @@ class LayerCollageItem(models.Model):
         if len(time_series) == 1:
             # Ignoring key ('location', 'parameter', 'unit')
             ts = time_series.values()[0]
-            # list of (datetime, (value, flag, comment))
-            #print 'hoi'
-            #print ts.get_events(start_date=start, end_date=end)
-            #del ts[datetime.datetime(2011, 8, 10, 0, 13)]
-            #print ts.get_events(start_date=start, end_date=end)
-            #ts = filter_ts_period(ts)
             result.update(calc_stats(ts))
         else:
             logger.warning(
                 'Multiple time series found for identifier=%r, skipped stats' %
                 identifier)
 
-        print result
         return result
 
 

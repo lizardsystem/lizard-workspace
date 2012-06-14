@@ -1,4 +1,4 @@
-{% extends "lizard_ui/lizardbase.html" %}
+{% extends "lizard_map/lizardgis.html" %}
 
 {% comment %}
 Collage screen with statistics for LayerCollage objects.
@@ -6,6 +6,10 @@ Collage screen with statistics for LayerCollage objects.
 
 {% block logo %}
 {% endblock %}
+
+{% block title %}
+Collage {{ view.collage.name }}
+{% endblock title %}
 
 {% block sidebar %}
 Sidebar
@@ -17,13 +21,30 @@ Sidebar
 </ul>
 {% endblock %}
 
-{% block content %}
-<div style="overflow-y: auto; height: 100%;"> {% comment %}Make it scrollable.{% endcomment %}
+{% block above-content %}
+  <a href="{% url lizard_map_date_range %}?reload_screen_after="
+     id="date-range"
+     title='Van {{ view.date_start_period|date:"d-m-Y" }} t/m {{ view.date_end_period|date:"d-m-Y" }}'
+     class="title datepicker-icon action-icon ajax-dialog-onchange reload-after-submit"
+     data-replace-items="date-range"
+     data-size="s"
+     rel="tipsy-south">&nbsp;</a>
+  {{ block.super }} {# Nothing yet #}
+{% endblock %}
 
-<h2>{{ view.collage.name }}</h2>
+{% block content %}
+{# Popups: invisible #}
+<div id="dialog">
+  <div id="dialog-content">
+  </div>
+</div>
+<div id="textual">{% comment %}Make it scrollable.{% endcomment %}
+
+<h2>Collage {{ view.collage.name }}</h2>
 
 <div>
 <ul>
+  <li>Periode: {{ view.date_start_period }} - {{ view.date_end_period }} </li>
   {% ifnotequal view.collage.summer_or_winter 1 %}
   <li>
     {% ifequal view.collage.summer_or_winter 2 %}
@@ -59,6 +80,7 @@ Sidebar
 <table class="generic-table">
   <thead>
     <th>Locatie</th>
+    <th>Aantal waardes</th>
     <th>Min</th>
     <th>Max</th>
     <th>Gemiddeld</th>
@@ -73,8 +95,9 @@ Sidebar
     {% for stat_row in view.collage_stats %}
     <tr>
       <td>{{ stat_row.name }}</td>
-      <td>{{ stat_row.standard.min|default_if_none:'-' }}</td>
-      <td>{{ stat_row.standard.max|default_if_none:'-' }}</td>
+      <td>{{ stat_row.item_count|default_if_none:'-' }}</td>
+      <td>{{ stat_row.standard.min.1.0|default_if_none:'-' }} ({{ stat_row.standard.min.0 }})</td>
+      <td>{{ stat_row.standard.max.1.0|default_if_none:'-' }} ({{ stat_row.standard.max.0 }})</td>
       <td>{{ stat_row.standard.avg|default_if_none:'-' }}</td>
       <td>{{ stat_row.standard.sum|default_if_none:'-' }}</td>
       <td>{{ stat_row.boundary.amount_less_equal|default_if_none:'-' }} ({{ stat_row.boundary.value|default_if_none:'-' }})</td>
@@ -96,7 +119,7 @@ Sidebar
   </div>
   <div style="height: 200px; width: 100%;"
        class="img-use-my-width img-use-my-size">
-    <a href="{{ collage_item.graph_url }}" class="replace-with-image">Graph</a>
+    <a href="{{ collage_item.graph_url }}{{ view.date_range_url_params }}" class="replace-with-image">Graph</a>
   </div>
   {% endif %}
 </div>
