@@ -46,6 +46,13 @@ class CollageView(DateRangeMixin, ViewContextMixin, TemplateView):
         return result
 
     def get(self, request, *args, **kwargs):
+        """
+        Display collage.
+
+        You can provide dt_start and dt_end to set system period.
+
+        ?dt_start=2001-06-15%2015:06:32.118341&dt_end=2012-06-14%2015:06:32.118341
+        """
         self.collage_id = kwargs.get('collage_id', None)
         # date_range: see lizard_map.daterange
         # 5 = last year
