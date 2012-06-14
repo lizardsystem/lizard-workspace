@@ -57,7 +57,6 @@ class CollageView(DateRangeMixin, ViewContextMixin, TemplateView):
         # date_range: see lizard_map.daterange
         # 5 = last year
         # 6 = custom
-        print current_start_end_dates(request)
         if 'dt_start' in request.GET and 'dt_end' in request.GET:
             dt_start = iso8601.parse_date(request.GET['dt_start'])
             # Get rid of time and tz info
