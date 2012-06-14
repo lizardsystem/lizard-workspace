@@ -433,24 +433,30 @@ class LayerCollage(LayerContainerMixin):
     owner = models.ForeignKey(User, blank=True, null=True)
 
     # settings for statistics
+    SUMMER_WINTER_ALL = 1
+    SUMMER_WINTER_SUMMER = 2
+    SUMMER_WINTER_WINTER = 3
     SUMMER_WINTER_CHOICES = (
-        (1, 'Hele jaar'),
-        (2, 'Alleen zomer (1 april - 1 oktober)'),
-        (3, 'Alleen winter (1 oktober - 1 april)'))
+        (SUMMER_WINTER_ALL, 'Hele jaar'),
+        (SUMMER_WINTER_SUMMER, 'Alleen zomer (1 april - 1 oktober)'),
+        (SUMMER_WINTER_WINTER, 'Alleen winter (1 oktober - 1 april)'))
+    DAY_NIGHT_ALL = 1
+    DAY_NIGHT_DAY = 2
+    DAY_NIGHT_NIGHT = 3
     DAY_NIGHT_CHOICES = (
-        (1, 'Hele dag'),
-        (2, 'Alleen dag (6:00-0:00)'),
-        (3, 'Alleen nacht (0:00-6:00)'))
+        (DAY_NIGHT_ALL, 'Hele dag'),
+        (DAY_NIGHT_DAY, 'Alleen dag (6:00-0:00)'),
+        (DAY_NIGHT_NIGHT, 'Alleen nacht (0:00-6:00)'))
 
     # Period
     summer_or_winter = models.IntegerField(
-        choices=SUMMER_WINTER_CHOICES, default=1)
+        choices=SUMMER_WINTER_CHOICES, default=SUMMER_WINTER_ALL)
     restrict_to_month = models.IntegerField(
         blank=True, null=True, help_text='1=jan, 2=feb, etc')
     day_of_week = models.IntegerField(
         blank=True, null=True, help_text='blank=all, 1=monday, 2=tuesday, etc')
     day_or_night = models.IntegerField(
-        choices=DAY_NIGHT_CHOICES, default=1)
+        choices=DAY_NIGHT_CHOICES, default=DAY_NIGHT_ALL)
 
     def __unicode__(self):
         return '%s' % self.name
@@ -596,38 +602,115 @@ class LayerCollageItem(models.Model):
                     params['moduleinstance'] = identifier['mod_ident']
                 if 'stp_ident' in identifier:
                     params['timestep'] = identifier['stp_ident']
-                if 'qua_ident' in identifier:
+                if 'qua_ident' in identifier and identifier['qua_ident']:
                     params['qualifierset'] = identifier['qua_ident']
                 series = Series.from_raw(
                     schema_prefix=source.database_schema_name,
                     params=params).using(source.database_name)
-                print list(series)
                 ts = Event.time_series(source, series, start, end)
                 cache.set(cache_key, ts)
             return ts
+
+        def filter_ts_period(ts):
+            """
+            Use collage settings to filter out unwanted dates.
+
+            Collage settings:
+            summer_or_winter
+            restrict_to_month
+            day_of_week
+            day_or_night
+
+            """
+            return ts
+
+        def calc_stats(ts):
+            """Return stats for time series and settings in this
+            collage item.
+
+            Return value is a dict with all the numbers in a fixed
+            structure.
+            """
+            result = {}
+
+            # Calc boundary value
+            if self.boundary_value is not None:
+                boundary_result = {
+                    'amount_less_equal': 0,
+                    'amount_greater': 0,
+                    'value': self.boundary_value}
+                for dt, (value, flag, comment) in ts.get_events(start_date=start, end_date=end):
+                    if value <= self.boundary_value:
+                        boundary_result['amount_less_equal'] += 1
+                    else:
+                        boundary_result['amount_greater'] += 1
+                result['boundary'] = boundary_result
+
+            # Calc percentiles
+            # Remember: datetime, (value, flag, comment)
+            sorted_items = sorted(
+                ts.get_events(start_date=start, end_date=end),
+                key=lambda i: i[1][0])
+            if sorted_items:
+                percentile_result = {
+                    'value': self.percentile_value,
+                    'median': sorted_items[int(50 * len(sorted_items) / 100)][1][0],
+                    '90': sorted_items[int(90 * len(sorted_items) / 100)][1][0],
+                    'user': None
+                    }
+                try:
+                    percentile_result['user'] = sorted_items[
+                        int(self.percentile_value * len(sorted_items) / 100)][1][0]
+                except:
+                    # percentile_value is not valid.
+                    pass
+                result['percentile'] = percentile_result
+
+            return result
+
         identifier = json.loads(self.identifier)
         start = datetime.datetime(2007, 1, 1)
         end = datetime.datetime(2012, 1, 1)
-        time_series = cached_time_series(identifier, start, end)
-        print time_series
 
-        return {
+        # Time series is a dict.
+        time_series = cached_time_series(identifier, start, end)
+
+        result = {
             'name': self.name,
             'boundary': {
-                'amount_less_equal': 666,
-                'amount_greater': 123,
+                'amount_less_equal': None,
+                'amount_greater': None,
                 'value': self.boundary_value},
             'standard': {
-                'min': 12,
-                'max': 32,
-                'avg': 20,
-                'sum': 100},
+                'min': None,
+                'max': None,
+                'avg': None,
+                'sum': None},
             'percentile': {
                 'value': self.percentile_value,
-                'user': 20,
-                'median': 40,
-                '90': 60}
+                'user': None,
+                'median': None,
+                '90': None}
             }
+
+        # Assume there is only 1, else do not calculate stats.
+        if len(time_series) == 1:
+            # Ignoring key ('location', 'parameter', 'unit')
+            ts = time_series.values()[0]
+            # list of (datetime, (value, flag, comment))
+            #print 'hoi'
+            #print ts.get_events(start_date=start, end_date=end)
+            #del ts[datetime.datetime(2011, 8, 10, 0, 13)]
+            #print ts.get_events(start_date=start, end_date=end)
+            #ts = filter_ts_period(ts)
+            result.update(calc_stats(ts))
+        else:
+            logger.warning(
+                'Multiple time series found for identifier=%r, skipped stats' %
+                identifier)
+
+        print result
+        return result
 
 
 class LayerFolder(AL_Node):

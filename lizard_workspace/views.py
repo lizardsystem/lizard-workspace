@@ -1,12 +1,13 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 
 from lizard_map.views import DateRangeMixin
-from lizard_ui.views import UiView
+#from lizard_ui.views import UiView
+from django.views.generic.base import TemplateView, View
 
 from lizard_workspace.models import LayerCollage
 
 
-class CollageView(DateRangeMixin, UiView):
+class CollageView(DateRangeMixin, TemplateView):
     template_name = 'lizard_workspace/collage.html'
 
     def title(self):
