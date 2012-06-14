@@ -1,51 +1,5 @@
 {% extends "lizard_ui/lizardbase.html" %}
 
-{% block css %}
-{{ block.super }}
-        <style type="text/css" media="screen, projection">
-/* Tables */
-table.generic-table {
-  border-collapse: collapse;
-  width: 100%;
-}
-
-table.generic-table,
-table.generic-table th,
-table.generic-table td {
-  border: 1px solid lightgrey;
-}
-
-table.generic-table thead th {
-  background-color: #f5f4f5;
-}
-
-table.generic-table .number {/* Number cells align right. */
-  text-align: right;
-}
-
-table.generic-table .button {/* Cells with some clickable image align in the center. */
-  text-align: center;
-}
-
-th, td, caption {
-  padding: 4px 10px 4px 5px;
-}
-
-body {
-  line-height: 1.5;
-}
-
-div#content {
-  padding: 20px 0px 4px 20px;
-}
-
-div.collage-graph {
-  padding-top: 30px;
-}
-
-</style>
-{% endblock %}
-
 {% comment %}
 Collage screen with statistics for LayerCollage objects.
 {% endcomment %}
@@ -54,15 +8,13 @@ Collage screen with statistics for LayerCollage objects.
 {% endblock %}
 
 {% block sidebar %}
+Sidebar
 {{ view.collage }}
 <ul>
 {% for collage_item in view.collage.layercollageitem_set.all %}
 <li>{{ collage_item.name }}</li>
 {% endfor %}
 </ul>
-{% endblock %}
-
-{% block secondary-sidebar %}
 {% endblock %}
 
 {% block content %}
