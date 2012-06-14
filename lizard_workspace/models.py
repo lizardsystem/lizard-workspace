@@ -453,7 +453,7 @@ class LayerCollage(LayerContainerMixin):
     restrict_to_month = models.IntegerField(
         blank=True, null=True, help_text='1=jan, 2=feb, etc')
     day_of_week = models.IntegerField(
-        blank=True, null=True, help_text='blank=all, 1=monday, 2=tuesday, etc')
+        blank=True, null=True, help_text='blank=all, 0=monday, 1=tuesday, etc')
     day_or_night = models.IntegerField(
         choices=DAY_NIGHT_CHOICES, default=DAY_NIGHT_ALL)
 
@@ -582,12 +582,11 @@ class LayerCollageItem(models.Model):
             Cached time series
             """
             def time_series_key(identifier, start, end):
-                return ('ts::%s::%s:%s' % (
-                    str(identifier), start, end)).replace(' ', '_')
+                return str(hash(('ts::%s::%s:%s' % (
+                    str(identifier), start, end)).replace(' ', '_')))
             cache_key = time_series_key(identifier, start, end)
-            print cache_key
-            #ts = cache.get(cache_key)
-            if 1:  # ts is None:
+            ts = cache.get(cache_key)
+            if ts is None:
                 # Actually fetching time series
                 source_name = identifier['fews_norm_source_slug']
                 source = FewsNormSource.objects.get(slug=source_name)
@@ -606,7 +605,7 @@ class LayerCollageItem(models.Model):
                     schema_prefix=source.database_schema_name,
                     params=params).using(source.database_name)
                 ts = Event.time_series(source, series, start, end)
-                #cache.set(cache_key, ts)
+                cache.set(cache_key, ts)
             return ts
 
         def filter_ts_period(ts):
@@ -620,7 +619,63 @@ class LayerCollageItem(models.Model):
             day_or_night
 
             """
+            collage = self.layer_collage
+
+            # Filter out winter.
+            if collage.summer_or_winter == LayerCollage.SUMMER_WINTER_SUMMER:
+                for timestamp in ts.keys():
+                    if timestamp.month < 4 or timestamp.month > 9:
+                        del ts[timestamp]
+
+            # Filter out summer.
+            if collage.summer_or_winter == LayerCollage.SUMMER_WINTER_WINTER:
+                for timestamp in ts.keys():
+                    if timestamp.month >= 4 and timestamp.month <= 9:
+                        del ts[timestamp]
+
+            # Only a single month.
+            if collage.restrict_to_month:
+                for timestamp in ts.keys():
+                    if timestamp.month != collage.restrict_to_month:
+                        del ts[timestamp]
+
+            # Filter out night.
+            if collage.day_or_night == LayerCollage.DAY_NIGHT_DAY:
+                for timestamp in ts.keys():
+                    if timestamp.hour >= 0 and timestamp.hour < 5:
+                        del ts[timestamp]
+
+            # Filter out day.
+            if collage.day_or_night == LayerCollage.DAY_NIGHT_NIGHT:
+                for timestamp in ts.keys():
+                    if timestamp.hour >= 6:
+                        del ts[timestamp]
+
+            # Only one day of week
+            if collage.day_of_week is not None:
+                for timestamp in ts.keys():
+                    if timestamp.weekday() != collage.day_of_week:
+                        del ts[timestamp]
+
             return ts
+
+        def cached_filter_ts_period(identifier, start, end, collage, ts):
+            """
+            Cache wrapper for filter_ts_period.
+
+            We have no about the timeseries, so you must provide them.
+            """
+            def filtered_ts_cache_key(identifier, start, end, collage):
+                return str(hash('filtered_ts::%s::%s:%s::%s:%s:%s:%s' % (
+                            identifier, start, end,
+                            collage.summer_or_winter, collage.restrict_to_month,
+                            collage.day_of_week, collage.day_or_night)))
+            cache_key = filtered_ts_cache_key(identifier, start, end, collage)
+            time_series = cache.get(cache_key)
+            if time_series is None:
+                time_series = filter_ts_period(ts)
+                cache.set(cache_key, time_series)
+            return time_series
 
         def calc_stats(ts):
             """Return stats for time series and settings in this
@@ -685,6 +740,9 @@ class LayerCollageItem(models.Model):
         identifier = json.loads(self.identifier)
 
         # Time series is a dict.
+
+        # Note: it is somewhat ineffective to fetch time series here
+        # and then fetch the filtered time series from cache later.
         time_series = cached_time_series(identifier, start, end)
 
         result = {
@@ -710,6 +768,7 @@ class LayerCollageItem(models.Model):
         if len(time_series) == 1:
             # Ignoring key ('location', 'parameter', 'unit')
             ts = time_series.values()[0]
+            cached_filter_ts_period(identifier, start, end, self.layer_collage, ts)
             result.update(calc_stats(ts))
         else:
             logger.warning(
