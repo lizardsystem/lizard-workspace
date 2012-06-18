@@ -1,0 +1,115 @@
+{# Collage edit period in a box #}
+<div class="dialog-box">
+  Periode eigenschappen van {{ view.collage }}.
+  <form action="{% url lizard_workspace_collage_box collage_id=view.collage.id %}" method="post">
+    {% csrf_token %}
+    <table>
+      <tr>
+        <td>Zomer of winter</td>
+        <td>
+          <label for="summer_or_winter_1">
+            <input type="radio" name="summer_or_winter" id="summer_or_winter_1" value="1" checked/>beide
+          </label>
+          <label for="summer_or_winter_2">
+            <input type="radio" name="summer_or_winter" id="summer_or_winter_2" value="2"/>zomer
+          </label>
+          <label for="summer_or_winter_3">
+            <input type="radio" name="summer_or_winter" id="summer_or_winter_3" value="3"/>winter
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td>Dag van de week</td>
+        <td>
+          <label for="day_of_week_all">
+            <input type="radio" name="day_of_week" id="day_of_week_all" value="" checked/>alle
+          </label>
+          <label for="day_of_week_0">
+            <input type="radio" name="day_of_week" id="day_of_week_0" value="0"/>ma
+          </label>
+          <label for="day_of_week_1">
+            <input type="radio" name="day_of_week" id="day_of_week_1" value="1"/>di
+          </label>
+          <label for="day_of_week_2">
+            <input type="radio" name="day_of_week" id="day_of_week_2" value="2"/>wo
+          </label>
+          <label for="day_of_week_3">
+            <input type="radio" name="day_of_week" id="day_of_week_3" value="3"/>do
+          </label>
+          <label for="day_of_week_4">
+            <input type="radio" name="day_of_week" id="day_of_week_4" value="4"/>vr
+          </label>
+          <label for="day_of_week_5">
+            <input type="radio" name="day_of_week" id="day_of_week_5" value="5"/>za
+          </label>
+          <label for="day_of_week_6">
+            <input type="radio" name="day_of_week" id="day_of_week_6" value="6"/>zo
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td>Dag of nacht</td>
+        <td>
+          <label for="day_or_night_1">
+            <input type="radio" name="day_or_night" id="day_or_week_1" value="1" checked />beide
+          </label>
+          <label for="day_or_night_2">
+            <input type="radio" name="day_or_night" id="day_or_week_2" value="2" />dag
+          </label>
+          <label for="day_or_night_3">
+            <input type="radio" name="day_or_night" id="day_or_week_3" value="3" />nacht
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td>Maand</td>
+        <td>
+          <label for="restrict_to_month_all">
+            <input type="radio" name="restrict_to_month" id="restrict_to_month_all" value="" checked/>alle
+          </label>
+          <label for="restrict_to_month_1">
+            <input type="radio" name="restrict_to_month" id="restrict_to_month_1" value="1" />jan
+          </label>
+          <label for="restrict_to_month_2">
+            <input type="radio" name="restrict_to_month" id="restrict_to_month_2" value="2" />feb
+          </label>
+          <label for="restrict_to_month_3">
+            <input type="radio" name="restrict_to_month" id="restrict_to_month_3" value="3" />mar
+          </label>
+          <label for="restrict_to_month_4">
+            <input type="radio" name="restrict_to_month" id="restrict_to_month_4" value="4" />apr
+          </label>
+          <label for="restrict_to_month_5">
+            <input type="radio" name="restrict_to_month" id="restrict_to_month_5" value="5" />mei
+          </label>
+          <label for="restrict_to_month_6">
+            <input type="radio" name="restrict_to_month" id="restrict_to_month_6" value="6" />jun
+          </label>
+          <label for="restrict_to_month_7">
+            <input type="radio" name="restrict_to_month" id="restrict_to_month_7" value="7" />jul
+          </label>
+          <label for="restrict_to_month_8">
+            <input type="radio" name="restrict_to_month" id="restrict_to_month_8" value="8" />aug
+          </label>
+          <label for="restrict_to_month_9">
+            <input type="radio" name="restrict_to_month" id="restrict_to_month_9" value="9" />sept
+          </label>
+          <label for="restrict_to_month_10">
+            <input type="radio" name="restrict_to_month" id="restrict_to_month_10" value="10" />okt
+          </label>
+          <label for="restrict_to_month_11">
+            <input type="radio" name="restrict_to_month" id="restrict_to_month_11" value="11" />nov
+          </label>
+          <label for="restrict_to_month_12">
+            <input type="radio" name="restrict_to_month" id="restrict_to_month_12" value="12" />dec
+          </label>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <input type="submit" value="Pas aan" class="reload-screen-after" />
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>

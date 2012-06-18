@@ -6,6 +6,8 @@ from django.contrib import admin
 
 from lizard_ui.urls import debugmode_urlpatterns
 from lizard_workspace.views import CollageView
+from lizard_workspace.views import CollageBoxView
+from lizard_workspace.views import CollageItemView
 
 admin.autodiscover()
 
@@ -18,6 +20,12 @@ urlpatterns = patterns(
     url(r'^collage/(?P<collage_id>\d+)/$',
         CollageView.as_view(),
         name=NAME_PREFIX + 'collage_view'),
+    url(r'^collage/(?P<collage_id>\d+)/box/$',
+        CollageBoxView.as_view(),
+        name=NAME_PREFIX + 'collage_box'),
+    url(r'^collage_item/(?P<collage_item_id>\d+)/$',
+        CollageItemView.as_view(),
+        name=NAME_PREFIX + 'collage_item_view'),
     (r'^api/',
      include('lizard_workspace.api.urls')),
     # (r'^admin/', include(admin.site.urls)),

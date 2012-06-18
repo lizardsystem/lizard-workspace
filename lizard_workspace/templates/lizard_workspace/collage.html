@@ -73,6 +73,8 @@ Sidebar
     {% endifequal %}
   </li>
   {% endifnotequal %}
+  <li><a href="{% url lizard_workspace_collage_box collage_id=view.collage.id %}" class="ajax-dialog">
+  bewerk periode eigenschappen</a></li>
 </ul>
 </div>
 
@@ -90,6 +92,7 @@ Sidebar
     <th>Percentiel mediaan</th>
     <th>Percentiel 90</th>
     <th>Percentiel gebruiker</th>
+    <th>Bewerken</th>
   </thead>
   <tbody>
     {% for stat_row in view.collage_stats %}
@@ -105,6 +108,7 @@ Sidebar
       <td>{{ stat_row.percentile.median|default_if_none:'-' }}</td>
       <td>{{ stat_row.percentile.90|default_if_none:'-' }}</td>
       <td>{{ stat_row.percentile.user|default_if_none:'-' }} ({{ stat_row.percentile.value|default_if_none:'-' }})</td>
+      <td><a href="{% url lizard_workspace_collage_item_view collage_item_id=stat_row.id %}" class="ajax-dialog">bewerk</a></td>
     </tr>
     {% endfor %}
   </tbody>

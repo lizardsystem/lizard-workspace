@@ -11,6 +11,7 @@ from lizard_ui.views import ViewContextMixin
 from django.views.generic.base import TemplateView
 
 from lizard_workspace.models import LayerCollage
+from lizard_workspace.models import LayerCollageItem
 
 
 class CollageView(DateRangeMixin, ViewContextMixin, TemplateView):
@@ -42,6 +43,7 @@ class CollageView(DateRangeMixin, ViewContextMixin, TemplateView):
         end = self.date_end_period()
         for collage_item in self.collage().layercollageitem_set.all():
             stats = collage_item.info_stats(start=start, end=end)
+            stats['id'] = collage_item.id
             result.append(stats)
         return result
 
@@ -67,3 +69,72 @@ class CollageView(DateRangeMixin, ViewContextMixin, TemplateView):
             compute_and_store_start_end(request.session, date_range)
             return HttpResponseRedirect('./')
         return super(CollageView, self).get(request, *args, **kwargs)
+
+
+class CollageItemView(ViewContextMixin, TemplateView):
+    template_name = 'lizard_workspace/box_collage_item.html'
+
+    def collage_item(self):
+        if not hasattr(self, '_collage_item'):
+            if self.collage_item_id:
+                self._collage_item = LayerCollageItem.objects.get(
+                    pk=self.collage_item_id)
+            else:
+                self._collage_item = None
+        return self._collage_item
+
+    def get(self, request, *args, **kwargs):
+        self.collage_item_id = kwargs.get('collage_item_id', None)
+        return super(CollageItemView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.collage_item_id = kwargs.get('collage_item_id', None)
+        collage_item = self.collage_item()
+        collage_item.boundary_value = float(request.POST['boundary_value'])
+        collage_item.percentile_value = float(request.POST['percentile_value'])
+        collage_item.save()
+        return HttpResponseRedirect('./')
+
+
+class CollageBoxView(ViewContextMixin, TemplateView):
+    """
+    Edit collage period settings:
+
+    - summer/winter
+    - day of week
+    - day or night
+    - restrict to month
+    """
+    template_name = 'lizard_workspace/box_collage.html'
+
+    def collage(self):
+        """Return collage"""
+        if not hasattr(self, '_collage'):
+            if self.collage_id:
+                self._collage = LayerCollage.objects.get(
+                    pk=self.collage_id)
+            else:
+                self._collage = None
+        return self._collage
+
+    def get(self, request, *args, **kwargs):
+        self.collage_id = kwargs.get('collage_id', None)
+        return super(CollageBoxView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.collage_id = kwargs.get('collage_id', None)
+        collage = self.collage()
+        collage.summer_or_winter = int(request.POST['summer_or_winter'])
+        try:
+            day_of_week = int(request.POST.get('day_of_week'))
+        except ValueError:
+            day_of_week = None
+        collage.day_of_week = day_of_week
+        try:
+            restrict_to_month = int(request.POST.get('restrict_to_month'))
+        except ValueError:
+            restrict_to_month = None
+        collage.restrict_to_month = restrict_to_month
+        collage.day_or_night = int(request.POST['day_or_night'])
+        collage.save()
+        return HttpResponseRedirect('./')

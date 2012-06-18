@@ -648,6 +648,7 @@ class LayerCollageItem(models.Model):
             # Filter out day.
             if collage.day_or_night == LayerCollage.DAY_NIGHT_NIGHT:
                 for timestamp in ts.keys():
+                    print timestamp.hour
                     if timestamp.hour >= 6:
                         del ts[timestamp]
 
@@ -666,10 +667,11 @@ class LayerCollageItem(models.Model):
             We have no about the timeseries, so you must provide them.
             """
             def filtered_ts_cache_key(identifier, start, end, collage):
-                return str(hash('filtered_ts::%s::%s:%s::%s:%s:%s:%s' % (
-                            identifier, start, end,
-                            collage.summer_or_winter, collage.restrict_to_month,
-                            collage.day_of_week, collage.day_or_night)))
+                cache_key_full = 'filtered_ts::%s::%s:%s::%s:%s:%s:%s' % (
+                    identifier, start, end,
+                    collage.summer_or_winter, collage.restrict_to_month,
+                    collage.day_of_week, collage.day_or_night)
+                return str(hash(cache_key_full))
             cache_key = filtered_ts_cache_key(identifier, start, end, collage)
             time_series = cache.get(cache_key)
             if time_series is None:
@@ -734,7 +736,6 @@ class LayerCollageItem(models.Model):
                     pass
                 result['percentile'] = percentile_result
 
-
             return result
 
         identifier = json.loads(self.identifier)
@@ -768,7 +769,7 @@ class LayerCollageItem(models.Model):
         if len(time_series) == 1:
             # Ignoring key ('location', 'parameter', 'unit')
             ts = time_series.values()[0]
-            cached_filter_ts_period(identifier, start, end, self.layer_collage, ts)
+            ts = cached_filter_ts_period(identifier, start, end, self.layer_collage, ts)
             result.update(calc_stats(ts))
         else:
             logger.warning(
