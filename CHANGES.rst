@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.16 (unreleased)
+0.16 (2012-06-18)
 -----------------
 
 - Added collage view: statistics, grouped graphs, editable properties.
