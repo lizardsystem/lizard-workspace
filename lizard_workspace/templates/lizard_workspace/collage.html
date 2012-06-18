@@ -116,15 +116,15 @@ Sidebar
 </table>
 </div>
 
-{% for collage_item in view.collage.layercollageitem_set.all %}
+{% for item in view.graphs_by_grouping_hint %}
 <div class="collage-graph">
-  {% if collage_item.graph_url %}
+  {% if item.graph_url %}
   <div>
-    {{ collage_item.name }}
+    {{ item.name }}
   </div>
   <div style="height: 200px; width: 100%;"
        class="img-use-my-width img-use-my-size">
-    <a href="{{ collage_item.graph_url }}{{ view.date_range_url_params }}" class="replace-with-image">Graph</a>
+    <a href="{{ item.graph_url }}{{ view.date_range_url_params }}" class="replace-with-image">Graph</a>
   </div>
   {% endif %}
 </div>

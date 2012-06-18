@@ -584,7 +584,7 @@ class LayerCollageItem(models.Model):
     def __unicode__(self):
         return '%s %s' % (self.layer_collage, self.layer)
 
-    def graph_url(self):
+    def graph_url(self, only_parameters=False):
         """Return url of graph or None
 
         Look at identifier and decide if the item has a graph.
@@ -600,8 +600,6 @@ class LayerCollageItem(models.Model):
         if not 'geo_ident' in identifier:
             return None
 
-        base_url = reverse('lizard_graph_graph_view')
-
         line_item = {
             "fews_norm_source_slug": identifier['fews_norm_source_slug'],
             "location": identifier['geo_ident'],
@@ -611,8 +609,12 @@ class LayerCollageItem(models.Model):
 
         parameters = []
         parameters.append('item=%s' % json.dumps(line_item).replace('"', '%22'))
-        parameters.append('legend-location=7')
-        return base_url + '?' + '&'.join(parameters)
+        if only_parameters:
+            return '&'.join(parameters)
+        else:
+            base_url = reverse('lizard_graph_graph_view')
+            parameters.append('legend-location=7')
+            return base_url + '?' + '&'.join(parameters)
 
     def info_stats(self, start, end):
         """Return statistics on time series

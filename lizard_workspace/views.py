@@ -3,6 +3,7 @@ import datetime
 import iso8601
 import csv
 
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 
@@ -121,6 +122,33 @@ class CollageView(DateRangeMixin, ViewContextMixin, TemplateView):
         else:
             # Return normal page, 'html'
             return super(CollageView, self).get(request, *args, **kwargs)
+
+    def graphs_by_grouping_hint(self):
+        """Return a list of graph urls with metadata, grouped by grouping_hint"""
+
+        # collect urls by grouping hint
+        grouped_items = {}
+        for collage_item in self.collage().layercollageitem_set.all():
+            grouping_hint = collage_item.grouping_hint
+            if grouping_hint not in grouped_items:
+                grouped_items[grouping_hint] = []
+            grouped_items[grouping_hint].append({
+                    'name': collage_item.name,
+                    'graph_params': collage_item.graph_url(only_parameters=True)
+                    })
+
+        # Now make items of it
+        result = []
+        base_url = reverse('lizard_graph_graph_view')
+        for key, value in grouped_items.items():
+            name = '%s: %s' % (key, ', '.join([v['name'] for v in value]))
+            graph_url = '%s?%s' % (
+                base_url, '&'.join([v['graph_params'] for v in value] + ['legend-location=7', ]))
+            result.append({
+                    'name': name,
+                    'graph_url': graph_url})
+
+        return result
 
 
 class CollageItemView(ViewContextMixin, TemplateView):
