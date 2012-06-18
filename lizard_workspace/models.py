@@ -1,6 +1,7 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 import json
 import logging
+import string
 
 from django.contrib.auth.models import User
 from django.core.cache import cache
@@ -19,6 +20,10 @@ from lizard_fewsnorm.models import FewsNormSource
 from lizard_fewsnorm.models import Series
 
 logger = logging.getLogger(__name__)
+
+# collage's secret slugs
+SECRET_SLUG_CHARS = string.ascii_lowercase
+SECRET_SLUG_LENGTH = 8
 
 
 class Category(models.Model):
@@ -439,6 +444,7 @@ class LayerCollage(LayerContainerMixin):
         (SUMMER_WINTER_ALL, 'Hele jaar'),
         (SUMMER_WINTER_SUMMER, 'Alleen zomer (1 april - 1 oktober)'),
         (SUMMER_WINTER_WINTER, 'Alleen winter (1 oktober - 1 april)'))
+    SUMMER_WINTER_DICT = dict(SUMMER_WINTER_CHOICES)
     DAY_NIGHT_ALL = 1
     DAY_NIGHT_DAY = 2
     DAY_NIGHT_NIGHT = 3
@@ -446,6 +452,7 @@ class LayerCollage(LayerContainerMixin):
         (DAY_NIGHT_ALL, 'Hele dag'),
         (DAY_NIGHT_DAY, 'Alleen dag (6:00-0:00)'),
         (DAY_NIGHT_NIGHT, 'Alleen nacht (0:00-6:00)'))
+    DAY_NIGHT_DICT = dict(DAY_NIGHT_CHOICES)
 
     # Period
     summer_or_winter = models.IntegerField(
@@ -513,8 +520,43 @@ class LayerCollage(LayerContainerMixin):
                 'grouping_hint': layer_collage_item.grouping_hint
             })
             result.append(item)
-
         return result
+
+    def display_month(self):
+        months = {
+            None: 'Alle maanden',
+            1: 'januari',
+            2: 'februari',
+            3: 'maart',
+            4: 'april',
+            5: 'mei',
+            6: 'juni',
+            7: 'juli',
+            8: 'augustus',
+            9: 'september',
+            10: 'oktober',
+            11: 'november',
+            12: 'december'}
+        return months[self.restrict_to_month]
+
+    def display_day(self):
+        days = {
+            None: 'Alle dagen',
+            0: 'maandag',
+            1: 'dinsdag',
+            2: 'woensdag',
+            3: 'donderdag',
+            4: 'vrijdag',
+            5: 'zaterdag',
+            6: 'zondag'}
+        return days[self.day_of_week]
+
+    def init_secret_slug(self):
+        """Experimental"""
+        pass
+        #self.secret_slug = ''.join(random.choice(SECRET_SLUG_CHARS)
+        #                           for i in range(SECRET_SLUG_LENGTH))
+
 
 
 class LayerCollageItem(models.Model):

@@ -1,7 +1,9 @@
 # (c) Nelen & Schuurmans.  GPL licensed, see LICENSE.txt.
 import datetime
 import iso8601
+import csv
 
+from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 
 from lizard_map.daterange import compute_and_store_start_end
@@ -32,10 +34,6 @@ class CollageView(DateRangeMixin, ViewContextMixin, TemplateView):
                 self._collage = None
         return self._collage
 
-    def collage_info(self):
-        """Info for all collage items"""
-        return self.collage().info()
-
     def collage_stats(self):
         """Info of individual collage items"""
         result = []
@@ -46,6 +44,53 @@ class CollageView(DateRangeMixin, ViewContextMixin, TemplateView):
             stats['id'] = collage_item.id
             result.append(stats)
         return result
+
+    def csv_response(self):
+        """
+        Return common collage information and stats of collage items.
+        """
+        response = HttpResponse(mimetype='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=collage.csv'
+
+        collage = self.collage()
+        date_range = current_start_end_dates(
+            self.request, for_form=True)
+
+        writer = csv.writer(response)
+        writer.writerow(['naam', collage.name])
+        writer.writerow(['periode', date_range['dt_start'], date_range['dt_end']])
+        writer.writerow(['zomer of winter', LayerCollage.SUMMER_WINTER_DICT[collage.summer_or_winter]])
+        writer.writerow(['dag of nacht', LayerCollage.DAY_NIGHT_DICT[collage.summer_or_winter]])
+        writer.writerow(['maand', collage.display_month()])
+        writer.writerow(['dag van de week', collage.display_day()])
+
+        writer.writerow([
+                'locatie', 'aantal waardes',
+                'min', 'datum min',
+                'max', 'datum max',
+                'gem',
+                'som',
+                'grenswaarde', 'aantal <= grenswaarde', 'aantal > grenswaarde',
+                'percentiel mediaan', 'percentiel 90',
+                'percentiel gebruiker', 'percentiel instelling'])
+
+        for stats in self.collage_stats():
+            writer.writerow([
+                    stats['name'], stats['item_count'],
+                    stats['standard']['min'][1][0], stats['standard']['min'][0],
+                    stats['standard']['max'][1][0], stats['standard']['max'][0],
+                    stats['standard']['avg'],
+                    stats['standard']['sum'],
+                    stats['boundary']['value'],
+                    stats['boundary']['amount_less_equal'],
+                    stats['boundary']['amount_greater'],
+                    stats['percentile']['median'],
+                    stats['percentile']['90'],
+                    stats['percentile']['user'],
+                    stats['percentile']['value'],
+                    ])
+
+        return response
 
     def get(self, request, *args, **kwargs):
         """
@@ -68,7 +113,14 @@ class CollageView(DateRangeMixin, ViewContextMixin, TemplateView):
             date_range = {'dt_end': dt_end, 'period': u'6', 'dt_start': dt_start}
             compute_and_store_start_end(request.session, date_range)
             return HttpResponseRedirect('./')
-        return super(CollageView, self).get(request, *args, **kwargs)
+
+        response_format = request.GET.get('format', 'html')
+        if response_format == 'csv':
+            # Return csv format
+            return self.csv_response()
+        else:
+            # Return normal page, 'html'
+            return super(CollageView, self).get(request, *args, **kwargs)
 
 
 class CollageItemView(ViewContextMixin, TemplateView):
