@@ -17,6 +17,35 @@ Changelog of lizard-workspace
 
 - Added temp feature for collage.
 
+0.15.4 (2012-06-11)
+-------------------
+
+- Update workspace_update to add location_filter to krwminimap layer.
+
+
+0.15.3 (2012-06-07)
+-------------------
+
+- Add mask layer to the esf popup layerworkspaces.
+
+
+0.15.2 (2012-06-07)
+-------------------
+
+- Modified workspace_update --minimap to create two layerworkspaces:
+  One for areas and one for krw-waterbodies.
+
+- Fix error in watersystem layer using deprecated geoserver layer.
+
+
+0.15.1 (2012-06-06)
+-------------------
+
+- Add option --all to workspace-update management command
+
+- Have workspace_update --minimap create the appropriate
+  layerworkspace as well.
+
 
 0.15 (2012-06-04)
 -----------------
