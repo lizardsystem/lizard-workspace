@@ -435,6 +435,7 @@ class LayerCollage(LayerContainerMixin):
          Layer, through='LayerCollageItem',
          null=True, blank=True)
     owner = models.ForeignKey(User, blank=True, null=True)
+    is_temp = models.BooleanField(default=False)
 
     # settings for statistics
     SUMMER_WINTER_ALL = 1

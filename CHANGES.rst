@@ -5,9 +5,11 @@ Changelog of lizard-workspace
 0.16 (unreleased)
 -----------------
 
-- Added collage view (work in progress).
+- Added collage view: statistics, grouped graphs, editable properties.
 
 - Added statistics to LayerCollageItem plus migration.
+
+- Added temp feature for collage.
 
 
 0.15 (2012-06-04)
