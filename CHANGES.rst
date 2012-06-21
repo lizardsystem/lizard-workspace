@@ -11,6 +11,8 @@ Changelog of lizard-workspace
 
 - Collages are now accessible through the secret slugs.
 
+- Added task and management command clean_temp_collages.
+
 
 0.16 (2012-06-18)
 -----------------

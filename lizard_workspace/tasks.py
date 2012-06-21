@@ -2,6 +2,7 @@
 import logging
 import datetime
 from celery.task import task
+from lizard_task.task import task_logging
 from copy import deepcopy
 from django.template.defaultfilters import slugify
 from django.utils import simplejson
@@ -10,6 +11,7 @@ from owslib.wms import WebMapService
 from lizard_task.handler import get_handler
 from lizard_workspace.models import Layer
 from lizard_workspace.models import Tag
+from lizard_workspace.models import LayerCollage
 from lizard_fewsnorm.models import TimeSeriesCache
 from lizard_fewsnorm.models import ParameterCache
 from lizard_workspace.models import SyncTask
@@ -945,7 +947,7 @@ def _create_single_layer_workspace(
         layer,
         layerworkspace,
     )
-        
+
     LayerWorkspaceItem.objects.create(
         layer_workspace=layerworkspace,
         layer=layer,
@@ -1000,3 +1002,20 @@ def workspace_update_minimap(username=None, taskname=None, loglevel=20):
     logger.removeHandler(handler)
 
     return 'OK'
+
+
+@task
+@task_logging
+def cleanup_temp_collages(username=None, taskname=None, loglevel=20):
+    logger = logging.getLogger(taskname)
+    logger.info('cleanup_temp_collages')
+    expiration_date = datetime.datetime.now() - datetime.timedelta(days=1)
+    logger.info('expiration date: %s' % expiration_date)
+
+    collages = LayerCollage.objects.filter(
+        is_temp=True, timestamp_updated__lte=expiration_date)
+    logger.info('collages to be removed: %d' % collages.count())
+
+    collages.delete()
+    logger.info('done')
+

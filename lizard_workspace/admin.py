@@ -39,7 +39,7 @@ class LayerWorkspaceAdmin(admin.ModelAdmin):
 class LayerCollageAdmin(admin.ModelAdmin):
     inlines = [LayerCollageItemInline, ]
     list_display = ('name', 'secret_slug', 'owner', 'is_temp', 'timestamp_updated')
-    list_filter = ('owner', )
+    list_filter = ('owner', 'is_temp')
 
 
 class LayerAdmin(admin.ModelAdmin):
@@ -69,7 +69,6 @@ class CategoryAdmin(admin.ModelAdmin):
 
 class TagAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'layer_count')
-
 
 
 class LayerFolderAdmin(admin.ModelAdmin):
