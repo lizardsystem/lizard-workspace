@@ -2,8 +2,8 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.18 (unreleased)
------------------
+0.17.1 (2012-06-21)
+-------------------
 
 - Updated popup template: it will not show "None" anymore.
 
