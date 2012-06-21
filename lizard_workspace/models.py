@@ -439,6 +439,8 @@ class LayerCollage(LayerContainerMixin):
          null=True, blank=True)
     owner = models.ForeignKey(User, blank=True, null=True)
     is_temp = models.BooleanField(default=False)
+    # For removing temp collages
+    timestamp_updated = models.DateTimeField(auto_now=True)
 
     # settings for statistics
     SUMMER_WINTER_ALL = 1
@@ -481,7 +483,6 @@ class LayerCollage(LayerContainerMixin):
         """
         logger.debug('save_workspace_layers')
         logger.debug(linked_records)
-        self.init_secret_slug()
         for record in linked_records:
             layer = Layer.objects.get(pk=record['plid'])
             collage_item, created = self.layercollageitem_set.get_or_create(
@@ -562,7 +563,13 @@ class LayerCollage(LayerContainerMixin):
             self.secret_slug = ''.join(
                 random.choice(SECRET_SLUG_CHARS)
                 for i in range(SECRET_SLUG_LENGTH))
+            print 'new secret slug: %r' % self.secret_slug
+        else:
+            print 'existing secret slug: %r' % self.secret_slug
 
+    def save(self, *args, **kwargs):
+        self.init_secret_slug()
+        return super(LayerCollage, self).save(*args, **kwargs)
 
 
 class LayerCollageItem(models.Model):

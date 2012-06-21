@@ -134,6 +134,11 @@ class LayerWorkspaceView(BaseApiView):
                 'read_only': not(worksp.owner_type == self.model_class.OWNER_TYPE_USER),
                 'layers': worksp.get_workspace_layers()
             }
+        # Only for collages, the collage view uses the same class.
+        if 'secret_slug' in worksp.__dict__:
+            output['secret_slug'] = worksp.secret_slug
+        if 'is_temp' in worksp.__dict__:
+            output['is_temp'] = worksp.is_temp
         return output
 
     def create_objects(self, data, request=None):
@@ -184,6 +189,32 @@ class LayerCollageView(LayerWorkspaceView):
     """
     model_class = LayerCollage
 
+    field_mapping = {
+        'id': 'id',
+        'name': 'name',
+        'personal_category': 'personal_category',
+        'category': 'category__name',
+        'owner_type': 'owner_type',
+        'data_set': 'data_set',
+        'owner': 'owner_id',
+        'layers': 'layers__name',
+        'read_only': 'owner_type',
+        'is_temp': 'is_temp',
+        'secret_slug': 'secret_slug',
+    }
+
+    read_only_fields = [
+        'tmp',
+        'category',
+        'data_set',
+        'type',
+        'read_only',
+        'secret_slug',
+    ]
+
+    def get_filtered_model(self, request):
+        return super(LayerCollageView, self).get_filtered_model(
+            request).exclude(is_temp=True)
 
 
 class AvailableLayersView(BaseApiView):

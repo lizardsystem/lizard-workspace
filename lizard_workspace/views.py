@@ -224,3 +224,7 @@ class CollageBoxView(ViewContextMixin, TemplateView):
         collage.day_or_night = int(request.POST['day_or_night'])
         collage.save()
         return HttpResponseRedirect('./')
+
+
+class CollagePlaceholder(TemplateView):
+    template_name = 'lizard_workspace/collage_placeholder.html'
