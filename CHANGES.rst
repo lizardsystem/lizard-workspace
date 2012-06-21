@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.17.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Add command and task to rename ESF layers.
 
 
 0.17.1 (2012-06-21)

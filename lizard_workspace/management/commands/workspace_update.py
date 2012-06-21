@@ -9,6 +9,7 @@ from lizard_workspace.tasks import (
     workspace_update_watersystem,
     workspace_update_trackrecords,
     workspace_update_minimap,
+    workspace_update_thememaps,
 )
 
 import optparse
@@ -36,6 +37,7 @@ class Command(BaseCommand):
         _option('watersystem', 'Configure watersystem layers'),
         _option('trackrecords', 'Configure trackrecord layers'),
         _option('minimap', 'Configure minimap layers'),
+        _option('thememaps', 'Configure thememaps layers'),
         _option('all', 'All of the above options in one command'),
     )
 
@@ -49,3 +51,5 @@ class Command(BaseCommand):
             workspace_update_trackrecords(loglevel=10)
         if options.get('minimap') or options.get('all'):
             workspace_update_minimap(loglevel=10)
+        if options.get('thememaps') or options.get('all'):
+            workspace_update_thememaps(loglevel=10)

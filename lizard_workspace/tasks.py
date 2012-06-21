@@ -1006,6 +1006,40 @@ def workspace_update_minimap(username=None, taskname=None, loglevel=20):
 
 @task
 @task_logging
+def workspace_update_thememaps(username=None, taskname=None, loglevel=20):
+    """
+    Add an area layer with a special style.
+    """
+    # Set up logging
+    logger = logging.getLogger(taskname)
+
+    # Actual code to do the task
+    replacements = (
+        ('ESF 1', 'ESF 1:Productiviteit water'),
+        ('ESF 2', 'ESF 2:Licht'),
+        ('ESF 3', 'ESF 3:Productiviteit bodem'),
+        ('ESF 4', 'ESF 4:Habitatgeschiktheid'),
+        ('ESF 5', 'ESF 5:Verspreiding'),
+        ('ESF 6', 'ESF 6:Verwijdering'),
+        ('ESF 7', 'ESF 7:Organische belasting'),
+        ('ESF 8', 'ESF 8:Toxiciteit'),
+        ('ESF 9', 'ESF 9:Beleving'),
+        ('ESF STATUS', 'ESF opgeteld'),
+    )
+    count_updated = 0
+    for old_name, new_name in replacements:
+        count_updated += Layer.objects.filter(
+            name=old_name,
+        ).update(
+            name=new_name,
+        )
+    logger.info('Renamed %s layers', count_updated)
+
+    return 'OK'
+
+
+@task
+@task_logging
 def cleanup_temp_collages(username=None, taskname=None, loglevel=20):
     logger = logging.getLogger(taskname)
     logger.info('cleanup_temp_collages')
