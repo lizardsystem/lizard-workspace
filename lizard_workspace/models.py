@@ -2,6 +2,7 @@
 import json
 import logging
 import string
+import random
 
 from django.contrib.auth.models import User
 from django.core.cache import cache
@@ -480,6 +481,7 @@ class LayerCollage(LayerContainerMixin):
         """
         logger.debug('save_workspace_layers')
         logger.debug(linked_records)
+        self.init_secret_slug()
         for record in linked_records:
             layer = Layer.objects.get(pk=record['plid'])
             collage_item, created = self.layercollageitem_set.get_or_create(
@@ -488,7 +490,7 @@ class LayerCollage(LayerContainerMixin):
                 identifier=record['identifier'],
                 index=record.get('index', 100),
                 grouping_hint=record.get('grouping_hint', ''))
-        return True
+        return self.secret_slug
 
     def save_single_many2many_relation(self, record, model_field, linked_records):
         """Called by the API
@@ -556,9 +558,10 @@ class LayerCollage(LayerContainerMixin):
 
     def init_secret_slug(self):
         """Experimental"""
-        pass
-        #self.secret_slug = ''.join(random.choice(SECRET_SLUG_CHARS)
-        #                           for i in range(SECRET_SLUG_LENGTH))
+        if not self.secret_slug:
+            self.secret_slug = ''.join(
+                random.choice(SECRET_SLUG_CHARS)
+                for i in range(SECRET_SLUG_LENGTH))
 
 
 

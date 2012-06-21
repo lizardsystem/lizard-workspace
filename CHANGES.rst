@@ -7,6 +7,8 @@ Changelog of lizard-workspace
 
 - Added field LayerCollage.secret_slug and migration.
 
+- Updated admin for LayerCollage.
+
 
 0.16 (2012-06-18)
 -----------------

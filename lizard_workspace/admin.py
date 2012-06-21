@@ -38,6 +38,8 @@ class LayerWorkspaceAdmin(admin.ModelAdmin):
 
 class LayerCollageAdmin(admin.ModelAdmin):
     inlines = [LayerCollageItemInline, ]
+    list_display = ('name', 'secret_slug', 'owner', 'is_temp', )
+    list_filter = ('owner', )
 
 
 class LayerAdmin(admin.ModelAdmin):
