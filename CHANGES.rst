@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.17 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Added field LayerCollage.secret_slug and migration.
 
 
 0.16 (2012-06-18)

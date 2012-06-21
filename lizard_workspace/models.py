@@ -431,6 +431,8 @@ class LayerCollage(LayerContainerMixin):
     Layer collage
     """
     name = models.CharField(max_length=200)
+    secret_slug = models.CharField(max_length=16, null=True)
+
     layers = models.ManyToManyField(
          Layer, through='LayerCollageItem',
          null=True, blank=True)
