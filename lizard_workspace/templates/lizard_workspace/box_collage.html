@@ -1,7 +1,7 @@
 {# Collage edit period in a box #}
 <div class="dialog-box">
   Periode eigenschappen van {{ view.collage }}.
-  <form action="{% url lizard_workspace_collage_box collage_id=view.collage.id %}" method="post">
+  <form action="{% url lizard_workspace_collage_box collage_slug=view.collage.secret_slug %}" method="post">
     {% csrf_token %}
     <table>
       <tr>

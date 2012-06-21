@@ -5,7 +5,9 @@ Changelog of lizard-workspace
 0.18 (unreleased)
 -----------------
 
-- Nothing changed yet.
+- Updated popup template: it will not show "None" anymore.
+
+- Fixed periode eigenschappen after update 0.17.
 
 
 0.17 (2012-06-21)

@@ -6,11 +6,11 @@
     <table>
       <tr>
         <td><label for="boundary_value">Grenswaarde</label></td>
-        <td><input type="text" name="boundary_value" value="{{ view.collage_item.boundary_value }}"/></td>
+        <td><input type="text" name="boundary_value" value="{{ view.collage_item.boundary_value|default_if_none:"" }}"/></td>
       </tr>
       <tr>
         <td><label for="percentile_value">Percentielwaarde</label></td>
-        <td><input type="text" name="percentile_value" value="{{ view.collage_item.percentile_value }}"/></td>
+        <td><input type="text" name="percentile_value" value="{{ view.collage_item.percentile_value|default_if_none:"" }}"/></td>
       </tr>
       <tr>
         <td colspan="2">
