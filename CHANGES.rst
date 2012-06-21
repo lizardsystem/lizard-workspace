@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.17.2 (unreleased)
+0.17.2 (2012-06-21)
 -------------------
 
 - Added download links in collage screen.
