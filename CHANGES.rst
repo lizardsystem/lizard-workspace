@@ -9,6 +9,8 @@ Changelog of lizard-workspace
 
 - Updated admin for LayerCollage.
 
+- Collages are now accessible through the secret slugs.
+
 
 0.16 (2012-06-18)
 -----------------

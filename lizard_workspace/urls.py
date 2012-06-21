@@ -17,12 +17,13 @@ NAME_PREFIX = 'lizard_workspace_'
 
 urlpatterns = patterns(
     '',
-    url(r'^collage/(?P<collage_id>\d+)/$',
+    url(r'^collage/(?P<collage_slug>\w+)/$',
         CollageView.as_view(),
         name=NAME_PREFIX + 'collage_view'),
-    url(r'^collage/(?P<collage_id>\d+)/box/$',
+    url(r'^collage/(?P<collage_slug>\w+)/box/$',
         CollageBoxView.as_view(),
         name=NAME_PREFIX + 'collage_box'),
+    # Note: collage items are not protected by a secret slug
     url(r'^collage_item/(?P<collage_item_id>\d+)/$',
         CollageItemView.as_view(),
         name=NAME_PREFIX + 'collage_item_view'),

@@ -6,6 +6,7 @@ import csv
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
+from django.http import Http404
 
 from lizard_map.daterange import compute_and_store_start_end
 from lizard_map.daterange import current_start_end_dates
@@ -28,9 +29,9 @@ class CollageView(DateRangeMixin, ViewContextMixin, TemplateView):
     def collage(self):
         """Return collage"""
         if not hasattr(self, '_collage'):
-            if self.collage_id:
+            if self.collage_slug:
                 self._collage = LayerCollage.objects.get(
-                    pk=self.collage_id)
+                    secret_slug=self.collage_slug)
             else:
                 self._collage = None
         return self._collage
@@ -101,7 +102,12 @@ class CollageView(DateRangeMixin, ViewContextMixin, TemplateView):
 
         ?dt_start=2001-06-15%2015:06:32.118341&dt_end=2012-06-14%2015:06:32.118341
         """
-        self.collage_id = kwargs.get('collage_id', None)
+        self.collage_slug = kwargs.get('collage_slug', None)
+        # check collage_slug
+        if LayerCollage.objects.filter(
+            secret_slug=self.collage_slug).count() == 0:
+            raise Http404
+
         # date_range: see lizard_map.daterange
         # 5 = last year
         # 6 = custom
@@ -190,15 +196,15 @@ class CollageBoxView(ViewContextMixin, TemplateView):
     def collage(self):
         """Return collage"""
         if not hasattr(self, '_collage'):
-            if self.collage_id:
+            if self.collage_slug:
                 self._collage = LayerCollage.objects.get(
-                    pk=self.collage_id)
+                    secret_slug=self.collage_slug)
             else:
                 self._collage = None
         return self._collage
 
     def get(self, request, *args, **kwargs):
-        self.collage_id = kwargs.get('collage_id', None)
+        self.collage_slug = kwargs.get('collage_slug', None)
         return super(CollageBoxView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
