@@ -5,6 +5,8 @@ Changelog of lizard-workspace
 0.17.3 (unreleased)
 -------------------
 
+- Added download link to XLS in collage screen.
+
 - Add command and task to rename ESF layers.
 
 
