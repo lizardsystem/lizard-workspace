@@ -17,6 +17,7 @@ install_requires = [
     'lizard-map',
     'lizard-fewsnorm',
     'lizard-task',
+    'lizard-graph >= 0.23',
     'OWSLib'
     ],
 
