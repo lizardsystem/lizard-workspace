@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.17.7 (unreleased)
+0.17.7 (2012-06-25)
 -------------------
 
 - Fixed another bug in collage popup.
