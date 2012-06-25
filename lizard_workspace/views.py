@@ -2,6 +2,8 @@
 import datetime
 import iso8601
 import csv
+import xlwt as excel
+from StringIO import StringIO
 
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
@@ -47,18 +49,13 @@ class CollageView(DateRangeMixin, ViewContextMixin, TemplateView):
             result.append(stats)
         return result
 
-    def csv_response(self):
+    def write_collage_rows(self, writer):
         """
-        Return common collage information and stats of collage items.
+        Common function used by csv_response and xls_response
         """
-        response = HttpResponse(mimetype='text/csv')
-        response['Content-Disposition'] = 'attachment; filename=collage.csv'
-
         collage = self.collage()
         date_range = current_start_end_dates(
             self.request, for_form=True)
-
-        writer = csv.writer(response)
         writer.writerow(['naam', collage.name])
         writer.writerow(['periode', date_range['dt_start'], date_range['dt_end']])
         writer.writerow(['zomer of winter', LayerCollage.SUMMER_WINTER_DICT[collage.summer_or_winter]])
@@ -92,6 +89,71 @@ class CollageView(DateRangeMixin, ViewContextMixin, TemplateView):
                     stats['percentile']['value'],
                     ])
 
+    def csv_response(self):
+        """
+        Return common collage information and stats of collage items.
+        """
+        response = HttpResponse(mimetype='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=collage.csv'
+
+        writer = csv.writer(response)
+        self.write_collage_rows(writer)
+
+        return response
+
+    def xls_response(self):
+        """
+        Return common collage information and stats of collage items in xls.
+        """
+        class XLSWriter():
+            def __init__(self, ws):
+                self.ws = ws
+                self.row_nr = 0
+
+            def writerow(self, row):
+                for col_nr, item in enumerate(row):
+                    self.ws.write(self.row_nr, col_nr, str(item))
+                self.row_nr += 1
+
+        # Set up xls styling (copy-pasted)
+        wb = excel.Workbook()
+        ws = wb.add_sheet('collage')
+        writer = XLSWriter(ws)
+
+        font1 = excel.Formatting.Font()
+        font1.name = 'Arial'
+        font1.height = 200
+        font1.bold = True
+
+        font2 = excel.Formatting.Font()
+        font2.name = 'Arial'
+        font2.height = 160
+
+        borders = excel.Borders()
+        borders.bottom = 10
+
+        st1 = excel.XFStyle()
+        st2 = excel.XFStyle()
+
+        st1.font = font1
+        st2.font = font2
+        st1.borders = borders
+
+        wb.add_style(st1)
+        wb.add_style(st2)
+
+        col_nr = 0
+        row_nr = 0
+
+        self.write_collage_rows(writer)
+
+        xls = StringIO()
+        wb.save(xls)
+        del wb
+        xls.seek(0)
+
+        response = HttpResponse(xls.read(), mimetype='application/xls')
+        response['Content-Disposition'] = 'attachment; filename=collage.xls'
         return response
 
     def get(self, request, *args, **kwargs):
@@ -125,6 +187,9 @@ class CollageView(DateRangeMixin, ViewContextMixin, TemplateView):
         if response_format == 'csv':
             # Return csv format
             return self.csv_response()
+        if response_format == 'xls':
+            # Return xls format
+            return self.xls_response()
         else:
             # Return normal page, 'html'
             return super(CollageView, self).get(request, *args, **kwargs)
