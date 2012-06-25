@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.17.4 (unreleased)
+0.17.4 (2012-06-25)
 -------------------
 
 - Added download collage statistics in XLS format.
