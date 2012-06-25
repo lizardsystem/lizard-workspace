@@ -1025,6 +1025,7 @@ def workspace_update_thememaps(username=None, taskname=None, loglevel=20):
         ('ESF 8', 'ESF 8:Toxiciteit'),
         ('ESF 9', 'ESF 9:Beleving'),
         ('ESF STATUS', 'ESF opgeteld'),
+        ('EKR Doelstelling', 'EKR Doelstelling (<108K)'),
     )
     count_updated = 0
     for old_name, new_name in replacements:
