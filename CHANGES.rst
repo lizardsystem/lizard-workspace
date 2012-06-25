@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.17.5 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Added download collage stats xls link in template.
 
 
 0.17.4 (2012-06-25)
