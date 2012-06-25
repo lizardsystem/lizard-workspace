@@ -241,8 +241,14 @@ class CollageItemView(ViewContextMixin, TemplateView):
     def post(self, request, *args, **kwargs):
         self.collage_item_id = kwargs.get('collage_item_id', None)
         collage_item = self.collage_item()
-        collage_item.boundary_value = float(request.POST['boundary_value'])
-        collage_item.percentile_value = float(request.POST['percentile_value'])
+        try:
+            collage_item.boundary_value = float(request.POST['boundary_value'])
+        except ValueError:
+            pass
+        try:
+            collage_item.percentile_value = float(request.POST['percentile_value'])
+        except ValueError:
+            pass
         collage_item.save()
         return HttpResponseRedirect('./')
 

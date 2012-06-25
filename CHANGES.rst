@@ -7,6 +7,8 @@ Changelog of lizard-workspace
 
 - Update updatecommand with ekr goalmap.
 
+- Bugfix in one of the collage popups.
+
 
 0.17.5 (2012-06-25)
 -------------------
