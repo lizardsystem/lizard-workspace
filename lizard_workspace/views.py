@@ -279,7 +279,7 @@ class CollageBoxView(ViewContextMixin, TemplateView):
         return super(CollageBoxView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        self.collage_id = kwargs.get('collage_id', None)
+        self.collage_slug = kwargs.get('collage_slug', None)
         collage = self.collage()
         collage.summer_or_winter = int(request.POST['summer_or_winter'])
         try:
