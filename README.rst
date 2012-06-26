@@ -18,4 +18,5 @@ Introduction
 
 - Provide API for LayerFolder (called AppLayerTreeView)
 
-
+- Lizard-history enabled: add lizard_workspace / layerworkspace and
+  lizard_workspace / layercollage to lizard_history.monitoredmodel.

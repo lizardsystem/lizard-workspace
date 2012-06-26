@@ -79,7 +79,8 @@ class WmsServer(models.Model):
         help_text='title provided by WMS server self (part of sync script)')
     is_local_server = models.BooleanField(
         default=False,
-        help_text='If true, calls from the client will not be wrapped in a proxy call.')
+        help_text=('If true, calls from the client will'
+                   ' not be wrapped in a proxy call.'))
     is_clickable = models.BooleanField(
         default=True,
         help_text='Are the layers clickable by default?')
@@ -110,7 +111,8 @@ class SyncTask(models.Model):
         help_text='The data set to be associated with the Layers.')
     tag = models.ForeignKey(
         Tag, null=True, blank=True,
-        help_text='The tag to be associated with the Layers. Defaults to auto generated tag.')
+        help_text=('The tag to be associated with the Layers. '
+                   'Defaults to auto generated tag.'))
 
     last_sync = models.DateTimeField(blank=True, null=True)
     last_result = models.TextField(blank=True, default='')
@@ -336,7 +338,7 @@ class LayerWorkspace(WorkspaceStorage, LayerContainerMixin):
     """
     Define a workspace: lizard-map workspace with extensions.
 
-    TODO: some ExtJS call return function?
+    lizard-map workspace functions are not used, which is infortunate.
     """
     class Meta:
         ordering = ['name']
@@ -510,8 +512,6 @@ class LayerCollage(LayerContainerMixin):
 
         layer_collage_items = self.layercollageitem_set.all().order_by(
             'index').select_related('layer')
-
-        output = []
 
         for layer_collage_item in layer_collage_items:
             item = layer_collage_item.layer.get_object_dict()

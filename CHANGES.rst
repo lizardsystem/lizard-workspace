@@ -5,7 +5,8 @@ Changelog of lizard-workspace
 0.17.8 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Added lizard-history to keep track of datetime_created and
+  datetime_modified for layer workspace and layer collage.
 
 
 0.17.7 (2012-06-25)

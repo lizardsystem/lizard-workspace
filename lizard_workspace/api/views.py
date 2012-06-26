@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 
 from djangorestframework.views import ListOrCreateModelView
 from lizard_api.base import BaseApiView
+from lizard_history.utils import get_simple_history
 
 from lizard_workspace.models import AppScreen
 from lizard_workspace.models import Layer
@@ -70,8 +71,6 @@ class LayerWorkspaceView(BaseApiView):
             ) | self.model_class.objects.exclude(
             owner_type=LayerWorkspace.OWNER_TYPE_USER)
 
-
-
     def get_object_for_api(self,
                            worksp,
                            flat=True,
@@ -80,6 +79,11 @@ class LayerWorkspaceView(BaseApiView):
         """
         create object of workspace
         """
+
+        # You get a dict with keys datetime_modified, modified_by,
+        # created_by, datetime_created
+        history = get_simple_history(worksp)
+
         if size == self.ID_NAME:
             output = {
                 'id': worksp.id,
@@ -106,7 +110,9 @@ class LayerWorkspaceView(BaseApiView):
                     worksp.owner_type,
                     flat
                 ),
-                'read_only': not(worksp.owner_type == self.model_class.OWNER_TYPE_USER)
+                'read_only': not(worksp.owner_type == self.model_class.OWNER_TYPE_USER),
+                'datetime_modified': history['datetime_modified'],
+                'datetime_created': history['datetime_created'],
             }
 
         elif size == self.COMPLETE:
@@ -132,7 +138,9 @@ class LayerWorkspaceView(BaseApiView):
                     flat
                 ),
                 'read_only': not(worksp.owner_type == self.model_class.OWNER_TYPE_USER),
-                'layers': worksp.get_workspace_layers()
+                'layers': worksp.get_workspace_layers(),
+                'datetime_modified': history['datetime_modified'],
+                'datetime_created': history['datetime_created'],
             }
         # Only for collages, the collage view uses the same class.
         if 'secret_slug' in worksp.__dict__:
@@ -169,6 +177,9 @@ class LayerWorkspaceView(BaseApiView):
             optional some relations in case the relation is through
             another object
         """
+        # TODO: do we need to 'touch' the workspace or collage object?
+        #record.description = 'asdfarjan'
+        #record.save()  # Update modified date
 
         if model_field.name == 'layers':
             record.save_workspace_layers(linked_records)
