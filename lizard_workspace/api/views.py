@@ -14,6 +14,9 @@ from lizard_workspace.models import LayerFolder
 from lizard_workspace.models import LayerCollage
 from lizard_workspace.models import LayerWorkspace
 
+from lizard_registration.models import Organisation
+from lizard_registration.models import UserProfile
+
 
 class RootView(View):
     """
@@ -64,12 +67,29 @@ class LayerWorkspaceView(BaseApiView):
 
 
     def get_filtered_model(self, request):
+        """
+        Return everything you can see:
 
-        return self.model_class.objects.filter(
-                   owner=request.user,
-                   owner_type=LayerWorkspace.OWNER_TYPE_USER
-            ) | self.model_class.objects.exclude(
-            owner_type=LayerWorkspace.OWNER_TYPE_USER)
+        - your own objects
+        - public objects
+        - organization objects (from people of your own organization,
+          defined in UserProfile, Organization in lizard_registration)
+        """
+        # Find out which organizations you belong to.
+        organizations = Organisation.objects.filter(
+            userprofile__user=request.user)
+        # Find user profiles where you can see things from
+        organization_userprofiles = UserProfile.objects.filter(
+            organisation__in=organizations)
+        allowed_from_users = [up.user for up in organization_userprofiles]
+
+        return (self.model_class.objects.filter(
+                owner=request.user) |
+                self.model_class.objects.filter(
+                owner_type=LayerWorkspace.OWNER_TYPE_PUBLIC) |
+                self.model_class.objects.filter(
+                owner_type=LayerWorkspace.OWNER_TYPE_ORGANIZATION,
+                owner__in=allowed_from_users))
 
     def get_object_for_api(self,
                            worksp,
@@ -83,6 +103,11 @@ class LayerWorkspaceView(BaseApiView):
         # You get a dict with keys datetime_modified, modified_by,
         # created_by, datetime_created
         history = get_simple_history(worksp)
+
+        # Fields are read-only if the object is not yours
+        read_only = ((self.request.user != worksp.owner) and
+                     not self.request.user.is_superuser)
+        #read_only = not(worksp.owner_type == self.model_class.OWNER_TYPE_USER)
 
         if size == self.ID_NAME:
             output = {
@@ -110,7 +135,7 @@ class LayerWorkspaceView(BaseApiView):
                     worksp.owner_type,
                     flat
                 ),
-                'read_only': not(worksp.owner_type == self.model_class.OWNER_TYPE_USER),
+                'read_only': read_only,
                 'datetime_modified': history['datetime_modified'],
                 'datetime_created': history['datetime_created'],
             }
@@ -137,7 +162,7 @@ class LayerWorkspaceView(BaseApiView):
                     worksp.owner_type,
                     flat
                 ),
-                'read_only': not(worksp.owner_type == self.model_class.OWNER_TYPE_USER),
+                'read_only': read_only,
                 'layers': worksp.get_workspace_layers(),
                 'datetime_modified': history['datetime_modified'],
                 'datetime_created': history['datetime_created'],

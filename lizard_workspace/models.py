@@ -314,12 +314,17 @@ class LayerContainerMixin(models.Model):
     OWNER_TYPE_USER = 0
     OWNER_TYPE_DATASET = 1
     OWNER_TYPE_PUBLIC = 2
+    # Users that are in the same lizard_registration.Organization,
+    # see lizard_registration.UserProfile
+    OWNER_TYPE_ORGANIZATION = 3
 
     OWNER_TYPE_CHOICES = (
         (OWNER_TYPE_USER, ("User")),
         (OWNER_TYPE_DATASET, ("Dataset")),
         (OWNER_TYPE_PUBLIC, ("Public")),
+        (OWNER_TYPE_ORGANIZATION, ("Organization")),
     )
+
     data_set = models.ForeignKey(DataSet, null=True, blank=True)
     owner_type = models.IntegerField(
         choices=OWNER_TYPE_CHOICES, default=OWNER_TYPE_USER)

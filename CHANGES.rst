@@ -8,6 +8,13 @@ Changelog of lizard-workspace
 - Added lizard-history to keep track of datetime_created and
   datetime_modified for layer workspace and layer collage.
 
+- Added OWNER_TYPE_ORGANIZATION, filtering on workspaces, collages
+  from people from your own organization.
+
+- Changed behaviour of 'read-only'. A workspace or collage now has the
+  read-only flag if the object is not of his own and if the user is
+  not a superuser.
+
 
 0.17.7 (2012-06-25)
 -------------------

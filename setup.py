@@ -19,6 +19,7 @@ install_requires = [
     'lizard-task',
     'lizard-graph >= 0.23',
     'lizard-history',
+    'lizard-registration',
     'OWSLib'
     ],
 
