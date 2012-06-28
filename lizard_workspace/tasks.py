@@ -81,6 +81,14 @@ def sync_layers_ekr(
          group_tag_measure_status),
         ('Maatregel status planning', "name = 'MEASURE-STATUS-PLANNING'", 'vss_measure_status',
          group_tag_measure_status),
+        ('Aantal maatregelen aan- afvoergebied', "name = 'MEASURE-COUNT'",
+         'vss_measure_count', group_tag_measure_status),
+        ('Aantal krw maatregelen', "name = 'MEASURE-COUNT-KRW'",
+         'vss_measure_count', group_tag_measure_status),
+        ('Aantal uitgevoerde maatregelen aan- afvoergebied', "name = 'MEASURE-COUNT-FINISHED'",
+         'vss_measure_count', group_tag_measure_status),
+        ('Aantal uitgevoerde krw maatregelen', "name = 'MEASURE-COUNT-FINISHED-KRW'",
+         'vss_measure_count', group_tag_measure_status),
     )
     for name, cql, style, group_tag in name_cql_style:
 
