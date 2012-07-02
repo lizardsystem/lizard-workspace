@@ -29,6 +29,10 @@ def sync_layers_ekr(
     slug='vss_area_value', username=None, taskname=None, loglevel=20):
     """
     Actually: sync_layers for ekr, esf and measures.
+
+    The task adds Layer objects with correct cql filters. The cql
+    filternames are predefined as ValueType elsewhere, such as in
+    vss.tasks.
     """
 
     # Set up logging
@@ -1045,6 +1049,48 @@ def workspace_update_thememaps(username=None, taskname=None, loglevel=20):
     logger.info('Renamed %s layers', count_updated)
 
     return 'OK'
+
+
+@task
+@task_logging
+def workspace_update_measure(username=None, taskname=None, loglevel=20):
+    """
+    Create / update LayerWorkspace thema_kaart_maatregelen with
+    measure layers.
+
+    The layers themselves are created in sync_layers_ekr (see above):
+    everything with tag 'measure-status-layers'.
+
+    20120702
+    """
+    logger = logging.getLogger(taskname)
+
+    ws, created = LayerWorkspace.objects.get_or_create(
+        slug='thema_kaart_maatregelen',
+        defaults={
+            'personal_category': 'ecologie',
+            'owner_type': LayerWorkspace.OWNER_TYPE_PUBLIC,
+            'name': 'Themakaart maatregelen',
+            }
+        )
+    if created:
+        logger.info('Created workspace thema_kaart_maatregelen: %s' % ws)
+    else:
+        logger.debug('Workspace thema_kaart_maatregelen exists')
+
+    measure_tag = 'measure-status-layers'
+    layers = Layer.objects.filter(tags__slug=measure_tag)
+    for layer in layers:
+        logger.info('layer: %s' % layer)
+        ws_item, created = LayerWorkspaceItem.objects.get_or_create(
+            layer_workspace=ws,
+            layer=layer)
+        if created:
+            logger.info('Added layer %s to thema_kaart_maatregelen' % layer)
+        else:
+            logger.info('Skipped: Layer %s already added' % layer)
+
+    logger.info('Finished')
 
 
 @task

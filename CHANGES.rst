@@ -7,6 +7,9 @@ Changelog of lizard-workspace
 
 - Added measure-count layers to sync_layers_ekr task.
 
+- Added task workspace_update_measure, also callable by django
+  management command workspace_update -thememapmeasure.
+
 
 0.18 (2012-06-26)
 -----------------
