@@ -204,7 +204,7 @@ class LayerWorkspaceView(BaseApiView):
         """
         # TODO: do we need to 'touch' the workspace or collage object?
         #record.description = 'asdfarjanaaa'
-        #record.save()  # Update modified date
+        record.save()  # Update modified date
 
         if model_field.name == 'layers':
             record.save_workspace_layers(linked_records)

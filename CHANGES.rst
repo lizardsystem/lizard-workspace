@@ -10,6 +10,8 @@ Changelog of lizard-workspace
 - Added task workspace_update_measure, also callable by django
   management command workspace_update -thememapmeasure.
 
+- Added record.save to Workspace/Collage api view update_many2many.
+
 
 0.18 (2012-06-26)
 -----------------
