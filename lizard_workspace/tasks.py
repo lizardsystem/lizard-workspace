@@ -1088,7 +1088,14 @@ def workspace_update_measure(username=None, taskname=None, loglevel=20):
         if created:
             logger.info('Added layer %s to thema_kaart_maatregelen' % layer)
         else:
-            logger.info('Skipped: Layer %s already added' % layer)
+            logger.info('Update only: Layer %s already added' % layer)
+        if layer.name == 'Aantal krw maatregelen':
+            ws_item.visible = True
+            ws_item.clickable = True
+        else:
+            ws_item.visible = False
+            ws_item.clickable = False
+        ws_item.save()
 
     logger.info('Finished')
 
