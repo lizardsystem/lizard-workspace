@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.19 (unreleased)
+0.19 (2012-07-02)
 -----------------
 
 - Added measure-count layers to sync_layers_ekr task.
