@@ -2,8 +2,8 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.20 (unreleased)
------------------
+0.19.1 (2012-07-02)
+-------------------
 
 - Improved workspace_update_measure: only 1 layer is now visible and
   clickable.
