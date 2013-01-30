@@ -5,7 +5,7 @@ Changelog of lizard-workspace
 0.19.2 (unreleased)
 -------------------
 
-- Nothing changed yet.
+- Changed layer's name from 'ESF STATUS' to 'ESF opgeteld' in the task sync_layers_ekr, pp359.
 
 
 0.19.1 (2012-07-02)

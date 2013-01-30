@@ -80,7 +80,7 @@ def sync_layers_ekr(
         ('ESF 7', "name = 'ESF-7'", 'vss_esf', group_tag_esf),
         ('ESF 8', "name = 'ESF-8'", 'vss_esf', group_tag_esf),
         ('ESF 9', "name = 'ESF-9'", 'vss_esf', group_tag_esf),
-        ('ESF STATUS', "name = 'ESF-STATUS'", 'vss_esf', group_tag_esf),
+        ('ESF opgeteld', "name = 'ESF-opgeteld'", 'vss_esf_total', group_tag_esf),
         ('Maatregel status', "name = 'MEASURE-STATUS'", 'vss_measure_status',
          group_tag_measure_status),
         ('Maatregel status planning', "name = 'MEASURE-STATUS-PLANNING'", 'vss_measure_status',
