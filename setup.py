@@ -13,6 +13,7 @@ install_requires = [
     'Django',
     'django-extensions',
     'django-nose',
+    'django-treebeard',
     'pkginfo',
     'lizard-map',
     'lizard-fewsnorm',
@@ -20,7 +21,7 @@ install_requires = [
     'lizard-graph >= 0.23',
     'lizard-history',
     'lizard-registration',
-    'OWSLib'
+    'OWSLib',
     ],
 
 tests_require = [
