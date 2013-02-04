@@ -25,8 +25,10 @@ logger = logging.getLogger(LOGGER_NAME)
 
 
 @task
-def sync_layers_ekr(
-    slug='vss_area_value', username=None, taskname=None, loglevel=20):
+def sync_layers_ekr(slug='vss_area_value',
+                    username=None,
+                    taskname=None,
+                    loglevel=20):
     """
     Actually: sync_layers for ekr, esf and measures.
 
@@ -71,15 +73,15 @@ def sync_layers_ekr(
         ('EKR OVWFLORA', "name = 'EKR-OVWFLORA'", 'vss_ekr_value', group_tag_ekr),
         ('EKR Minst gunstig', "name = 'EKR-ONGUNSTIG'", 'vss_ekr_value', group_tag_ekr),
         ('EKR Doelstelling', "name = 'EKR-DOELSCORE'", 'vss_ekr_score', group_tag_ekr),
-        ('ESF 1', "name = 'ESF-1'", 'vss_esf', group_tag_esf),
-        ('ESF 2', "name = 'ESF-2'", 'vss_esf', group_tag_esf),
-        ('ESF 3', "name = 'ESF-3'", 'vss_esf', group_tag_esf),
-        ('ESF 4', "name = 'ESF-4'", 'vss_esf', group_tag_esf),
-        ('ESF 5', "name = 'ESF-5'", 'vss_esf', group_tag_esf),
-        ('ESF 6', "name = 'ESF-6'", 'vss_esf', group_tag_esf),
-        ('ESF 7', "name = 'ESF-7'", 'vss_esf', group_tag_esf),
-        ('ESF 8', "name = 'ESF-8'", 'vss_esf', group_tag_esf),
-        ('ESF 9', "name = 'ESF-9'", 'vss_esf', group_tag_esf),
+        ('ESF 1:Productiviteit water', "name = 'ESF 1:Productiviteit water'", 'vss_esf', group_tag_esf),
+        ('ESF 2:Licht', "name = 'ESF 2:Licht'", 'vss_esf', group_tag_esf),
+        ('ESF 3:Productiviteit bodem', "name = 'ESF 3:Productiviteit bodem'", 'vss_esf', group_tag_esf),
+        ('ESF 4:Habitatgeschiktheid', "name = 'ESF 4:Habitatgeschiktheid'", 'vss_esf', group_tag_esf),
+        ('ESF 5:Verspreiding', "name = 'ESF 5:Verspreiding'", 'vss_esf', group_tag_esf),
+        ('ESF 6:Verwijdering', "name = 'ESF 6:Verwijdering'", 'vss_esf', group_tag_esf),
+        ('ESF 7:Organische belasting', "name = 'ESF 7:Organische belasting'", 'vss_esf', group_tag_esf),
+        ('ESF 8:Toxiciteit', "name = 'ESF 8:Toxiciteit'", 'vss_esf', group_tag_esf),
+        ('ESF 9:Beleving', "name = 'ESF 9:Beleving'", 'vss_esf', group_tag_esf),
         ('ESF opgeteld', "name = 'ESF-opgeteld'", 'vss_esf_total', group_tag_esf),
         ('Maatregel status', "name = 'MEASURE-STATUS'", 'vss_measure_status',
          group_tag_measure_status),
@@ -143,8 +145,10 @@ def sync_layers_ekr(
 
 
 @task
-def sync_layers_fewsnorm(
-    slug='vss_fews_locations', username=None, taskname=None, loglevel=20):
+def sync_layers_fewsnorm(slug='vss_fews_locations',
+                         username=None,
+                         taskname=None,
+                         loglevel=20):
 
     # Set up logging
     handler = get_handler(username=username, taskname=taskname)
@@ -244,8 +248,10 @@ def sync_layers_fewsnorm(
 
 
 @task
-def sync_layers_measure(
-    slug='vss_measure', username=None, taskname=None, loglevel=20):
+def sync_layers_measure(slug='vss_measure',
+                        username=None,
+                        taskname=None,
+                        loglevel=20):
 
     # Set up logging
     handler = get_handler(username=username, taskname=taskname)
@@ -352,8 +358,10 @@ def sync_layers_measure(
 
 
 @task
-def sync_layers_track(
-    slug='vss_track_records', username=None, taskname=None, loglevel=20):
+def sync_layers_track(slug='vss_track_records',
+                      username=None,
+                      taskname=None,
+                      loglevel=20):
     """
     Sync layers for track records.
     """
@@ -455,6 +463,7 @@ def sync_layers_track(
 
     return 'OK'
 
+
 def perform_sync_task(task):
     """
     Run sync_task
@@ -555,8 +564,8 @@ def perform_sync_task(task):
 
     logger.info('%i new layers: %s.' % (new, str(', '.join(new_names))))
     logger.info('%i updated layers.' % (updated))
-    logger.info('%i removed layers: %s.' % (
-            removed, str(', '.join(removed_names))))
+    logger.info('%i removed layers: %s.' % (removed,
+                                            str(', '.join(removed_names))))
 
     task.last_sync = datetime.datetime.now()
     task.last_result = '%i new, %i updated, %i removed' % (
@@ -566,8 +575,11 @@ def perform_sync_task(task):
 
 
 @task
-def sync_layers_with_wmsserver(
-    synctask=None, all=False, username=None, taskname=None, loglevel=20):
+def sync_layers_with_wmsserver(synctask=None,
+                               all=False,
+                               username=None,
+                               taskname=None,
+                               loglevel=20):
 
     # Set up logging
     handler = get_handler(username=username, taskname=taskname)
@@ -909,8 +921,7 @@ def _create_single_layer_workspace(
         layer_style,
         layer_slug,
         layer_name,
-        defaults={},
-    ):
+        defaults={}, ):
     """
     Create or replace new layer and layerworkspace based on template objects.
     """
@@ -932,7 +943,6 @@ def _create_single_layer_workspace(
         setattr(layer, k, v)
     layer.save()
 
-
     logger.info(
         'Deleting any layerworkspace with slug %s',
         layerworkspace_slug,
@@ -946,7 +956,8 @@ def _create_single_layer_workspace(
         layerworkspace_name,
         layerworkspace_slug,
     )
-    layerworkspace = LayerWorkspace.objects.get(slug=layerworkspace_template_slug)
+    layerworkspace = LayerWorkspace.objects.get(
+        slug=layerworkspace_template_slug)
     layerworkspace.pk = None
     layerworkspace.id = None
     layerworkspace.save()
@@ -1021,6 +1032,8 @@ def workspace_update_minimap(username=None, taskname=None, loglevel=20):
 def workspace_update_thememaps(username=None, taskname=None, loglevel=20):
     """
     Add an area layer with a special style.
+    ATTENTION: the task sync_layers_ekr creates a nieuw one
+               if the layer's name is not found.
     """
     # Set up logging
     logger = logging.getLogger(taskname)
@@ -1070,9 +1083,7 @@ def workspace_update_measure(username=None, taskname=None, loglevel=20):
         defaults={
             'personal_category': 'ecologie',
             'owner_type': LayerWorkspace.OWNER_TYPE_PUBLIC,
-            'name': 'Themakaart maatregelen',
-            }
-        )
+            'name': 'Themakaart maatregelen'})
     if created:
         logger.info('Created workspace thema_kaart_maatregelen: %s' % ws)
     else:
@@ -1114,4 +1125,3 @@ def cleanup_temp_collages(username=None, taskname=None, loglevel=20):
 
     collages.delete()
     logger.info('done')
-
