@@ -2,7 +2,7 @@ Changelog of lizard-workspace
 ===================================================
 
 
-0.19.3 (unreleased)
+0.19.3 (2013-02-04)
 -------------------
 
 - Change layer's name for esf-thememaps pp359.
